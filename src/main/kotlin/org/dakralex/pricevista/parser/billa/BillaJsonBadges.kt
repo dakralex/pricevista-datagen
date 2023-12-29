@@ -5,7 +5,7 @@ import kotlinx.serialization.SerialName
 /**
  * Enumeration of the different seals of quality (ger. "Gütesiegel")
  */
-enum class JsonBillaBadges {
+enum class BillaJsonBadges {
     /**
      * In-store label for new products
      */

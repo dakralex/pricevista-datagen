@@ -4,12 +4,12 @@ import kotlinx.serialization.Serializable
 import org.dakralex.pricevista.parser.DoubleAsStringSerializer
 
 @Serializable
-data class JsonBillaEntry(
+data class BillaJsonEntry(
     val ageRequiredInMonths: Int? = null,
     @Serializable(with = DoubleAsStringSerializer::class)
     val amount: Double,
-    val badges: List<JsonBillaBadges>? = null,
-    val brand: JsonBillaBrand? = null,
+    val badges: List<BillaJsonBadges>? = null,
+    val brand: BillaJsonBrand? = null,
     val category: String? = null,
     val depositType: String? = null,
     val descriptionShort: String? = null,
@@ -23,9 +23,9 @@ data class JsonBillaEntry(
     val name: String,
     val packageLabel: String? = null,
     val packageLabelKey: String? = null,
-    val parentCategories: List<List<JsonBillaParentCategory>>,
+    val parentCategories: List<List<BillaJsonParentCategory>>,
     val preparationTime: Int? = null,
-    val price: JsonBillaPriceInfo,
+    val price: BillaJsonPriceInfo,
     val productId: String,
     val productMarketing: String? = null,
     val purchased: Boolean,

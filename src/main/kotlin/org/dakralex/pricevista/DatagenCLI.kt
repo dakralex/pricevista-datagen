@@ -12,7 +12,7 @@ import com.github.ajalt.clikt.parameters.types.enum
 import com.github.ajalt.clikt.parameters.types.file
 import com.github.ajalt.clikt.parameters.types.int
 import com.github.ajalt.clikt.sources.PropertiesValueSource
-import org.dakralex.pricevista.parser.billa.parseJsonBillaEntries
+import org.dakralex.pricevista.parser.billa.BillaJsonParser
 import org.dakralex.pricevista.shops.RegisteredRetailers
 
 const val CONFIG_FILE = "datagen.properties"
@@ -98,16 +98,11 @@ class Update : CliktCommand(help = "Update the database") {
 
     override fun run() {
         when (type) {
-            RegisteredRetailers.ADEG -> TODO()
-            RegisteredRetailers.BILLA -> parseJsonBillaEntries(files[0].inputStream())
-            RegisteredRetailers.DM -> TODO()
-            RegisteredRetailers.HOFER -> TODO()
-            RegisteredRetailers.LIDL -> TODO()
-            RegisteredRetailers.MPREIS -> TODO()
-            RegisteredRetailers.MUELLER -> TODO()
-            RegisteredRetailers.PENNY -> TODO()
-            RegisteredRetailers.SPAR -> TODO()
-            RegisteredRetailers.UNIMARKT -> TODO()
+            RegisteredRetailers.BILLA -> BillaJsonParser.parseEntriesFromJson(
+                files
+            )
+
+            else -> TODO()
         }
     }
 }
@@ -121,6 +116,7 @@ class Drop : CliktCommand(help = "Drop the database") {
 
 fun main(args: Array<String>) =
     DatagenCLI().subcommands(Init(), Update(), Drop()).main(args)
+
 
 // TODO Sync with gradle version
 fun version() = "1.0-SNAPSHOT"

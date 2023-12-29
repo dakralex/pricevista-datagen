@@ -9,22 +9,22 @@ import org.dakralex.pricevista.parser.IntAsStringSerializer
  */
 @JvmInline
 @Serializable
-value class JsonBillaPrice(val value: Int)
+value class BillaJsonPrice(val value: Int)
 
 @Serializable
-data class JsonBillaPriceCategory(
-    val perStandardizedQuantity: JsonBillaPrice,
+data class BillaJsonPriceCategory(
+    val perStandardizedQuantity: BillaJsonPrice,
     val promotionQuantity: Int? = null,
     val promotionText: String? = null,
-    val promotionType: JsonBillaPromotionType? = null,
-    val promotionValue: JsonBillaPrice? = null,
+    val promotionType: BillaPromotionType? = null,
+    val promotionValue: BillaJsonPrice? = null,
     val promotionValuePerStandardizedQuantity: Int? = null,
     val tags: List<String>, // TODO Use enum class JsonBillaPriceTag in the future
-    val value: JsonBillaPrice
+    val value: BillaJsonPrice
 )
 
 @Serializable
-data class JsonBillaPriceInfo(
+data class BillaJsonPriceInfo(
     /**
      * TODO Unsure about what the basePriceFactor is (value is either null, 1, 100, or 500)
      **/
@@ -41,10 +41,10 @@ data class JsonBillaPriceInfo(
     /**
      * Displayed, crossed-out whole-number price (for discounts)
      **/
-    val crossed: JsonBillaPrice? = null,
+    val crossed: BillaJsonPrice? = null,
     /**
      * Discount percentage as a negative number ranging from [null;-100]
      **/
     val discountPercentage: Int? = null,
-    val regular: JsonBillaPriceCategory
+    val regular: BillaJsonPriceCategory
 )

@@ -9,25 +9,3 @@ class Company(
     override var postalCode: String? = "",
     override var streetAddress: String? = ""
 ) : HasExactLocation
-
-class Retailer(
-    private val company: Company,
-    var marketShare: Double? = 0.0,
-    var annualRevenue: Double? = 0.0,
-    var profitMargin: Double? = 0.0,
-    var workingCurrency: String = "EUR",
-) {
-    val company_id = company.id
-}
-
-class Brand(
-    private val company: Company,
-    var productLine: String? = null
-) {
-    val name: String = company.name
-}
-
-class CompanyOwnership(
-    val ownerId: Number,
-    val owneeId: Number
-)

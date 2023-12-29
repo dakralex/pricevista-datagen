@@ -16,7 +16,10 @@ dependencies {
     implementation(kotlin("stdlib"))
     implementation("com.github.ajalt.clikt:clikt:4.+")
     implementation("com.oracle.database.jdbc:ojdbc11:23.+")
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.2")
+    implementation("org.slf4j:slf4j-api:2.+")
+    implementation("org.slf4j:slf4j-log4j12:2.+")
+    implementation("io.github.oshai:kotlin-logging-jvm:5.+")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.+")
     testImplementation("org.jetbrains.kotlin:kotlin-test")
 }
 
