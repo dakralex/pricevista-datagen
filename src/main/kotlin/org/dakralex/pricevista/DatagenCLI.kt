@@ -12,18 +12,39 @@ import com.github.ajalt.clikt.parameters.types.enum
 import com.github.ajalt.clikt.parameters.types.file
 import com.github.ajalt.clikt.parameters.types.int
 import com.github.ajalt.clikt.sources.PropertiesValueSource
+import org.dakralex.pricevista.parser.billa.parseJsonBillaEntries
 import org.dakralex.pricevista.shops.RegisteredRetailers
 
 const val CONFIG_FILE = "datagen.properties"
 
-data class Config(var databaseUri: String, var databaseUser: String, var databasePass: String, var verbose: Boolean)
+data class Config(
+    var databaseUri: String,
+    var databaseUser: String,
+    var databasePass: String,
+    var verbose: Boolean
+)
 
 class DatabaseOptions : OptionGroup(name = "Database options") {
-    val host by option("--db-host", valueSourceKey = "db.host", help = "Changes database host").prompt("Host")
-    val port by option("--db-port", valueSourceKey = "db.port", help = "Changes database port").int().default(1521)
-    val name by option("--db-name", valueSourceKey = "db.name", help = "Changes database name").default("orclcdb")
-    val user by option("--db-user", valueSourceKey = "db.user", help = "Changes database username").prompt("Username")
-    val pass by option("--db-pass", valueSourceKey = "db.pass", help = "Changes database password").prompt("Password")
+    val host by option("--db-host", valueSourceKey = "db.host")
+        .help("Changes database host")
+        .prompt("Host")
+
+    val port by option("--db-port", valueSourceKey = "db.port")
+        .help("Changes database port")
+        .int()
+        .default(1521)
+
+    val name by option("--db-name", valueSourceKey = "db.name")
+        .help("Changes database name")
+        .default("orclcdb")
+
+    val user by option("--db-user", valueSourceKey = "db.user")
+        .help("Changes database username")
+        .prompt("Username")
+
+    val pass by option("--db-pass", valueSourceKey = "db.pass")
+        .help("Changes database password")
+        .prompt("Password")
 }
 
 class DatagenCLI : CliktCommand(
@@ -41,22 +62,27 @@ class DatagenCLI : CliktCommand(
     }
 
     private val database by DatabaseOptions()
-    private val verbose: Boolean by option(
-        "-v",
-        "--verbose",
-        help = "Enables verbose mode"
-    ).flag()
+    private val verbose: Boolean by option("-v", "--verbose")
+        .help("Enables verbose mode")
+        .flag()
 
     override fun run() {
-        val config = Config(database.host, database.user, database.pass, verbose)
+        val config =
+            Config(database.host, database.user, database.pass, verbose)
 
         currentContext.obj = config
     }
 }
 
+val defaultRetailers: List<RegisteredRetailers> =
+    listOf(RegisteredRetailers.BILLA)
+
 class Init : CliktCommand(help = "Initialize the database") {
-    val retailers by option(help = "Sets the online retailers that should be considered").enum<RegisteredRetailers>(true)
+    val retailers by option()
+        .help("Sets the online retailers that should be considered")
+        .enum<RegisteredRetailers>()
         .split(",")
+        .default(defaultRetailers)
 
     override fun run() {
         TODO("Not yet implemented")
@@ -64,14 +90,25 @@ class Init : CliktCommand(help = "Initialize the database") {
 }
 
 class Update : CliktCommand(help = "Update the database") {
-
-    val files by argument().file(
+    private val type by argument().enum<RegisteredRetailers>()
+    private val files by argument().file(
         mustExist = true,
         mustBeReadable = true
     ).multiple()
 
     override fun run() {
-        TODO("Not yet implemented")
+        when (type) {
+            RegisteredRetailers.ADEG -> TODO()
+            RegisteredRetailers.BILLA -> parseJsonBillaEntries(files[0].inputStream())
+            RegisteredRetailers.DM -> TODO()
+            RegisteredRetailers.HOFER -> TODO()
+            RegisteredRetailers.LIDL -> TODO()
+            RegisteredRetailers.MPREIS -> TODO()
+            RegisteredRetailers.MUELLER -> TODO()
+            RegisteredRetailers.PENNY -> TODO()
+            RegisteredRetailers.SPAR -> TODO()
+            RegisteredRetailers.UNIMARKT -> TODO()
+        }
     }
 }
 

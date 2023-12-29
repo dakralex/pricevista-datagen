@@ -23,7 +23,9 @@ class Retailer(
 class Brand(
     private val company: Company,
     var productLine: String? = null
-)
+) {
+    val name: String = company.name
+}
 
 class CompanyOwnership(
     val ownerId: Number,

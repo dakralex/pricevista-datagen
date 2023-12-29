@@ -1,8 +1,6 @@
-val cliktVersion = "4.+"
-val ojdbcVersion = "23.+"
-
 plugins {
     kotlin("jvm") version "1.9.21"
+    kotlin("plugin.serialization") version "1.9.21"
     application
 }
 
@@ -15,9 +13,10 @@ repositories {
 }
 
 dependencies {
-    implementation("com.github.ajalt.clikt:clikt:$cliktVersion")
-    implementation("com.oracle.database.jdbc:ojdbc11:$ojdbcVersion")
     implementation(kotlin("stdlib"))
+    implementation("com.github.ajalt.clikt:clikt:4.+")
+    implementation("com.oracle.database.jdbc:ojdbc11:23.+")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.2")
     testImplementation("org.jetbrains.kotlin:kotlin-test")
 }
 
