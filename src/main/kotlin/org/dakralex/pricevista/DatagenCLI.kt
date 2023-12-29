@@ -3,49 +3,17 @@ package org.dakralex.pricevista
 import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.core.context
 import com.github.ajalt.clikt.core.subcommands
-import com.github.ajalt.clikt.parameters.arguments.argument
-import com.github.ajalt.clikt.parameters.arguments.multiple
-import com.github.ajalt.clikt.parameters.groups.OptionGroup
-import com.github.ajalt.clikt.parameters.groups.provideDelegate
-import com.github.ajalt.clikt.parameters.options.*
-import com.github.ajalt.clikt.parameters.types.enum
-import com.github.ajalt.clikt.parameters.types.file
-import com.github.ajalt.clikt.parameters.types.int
+import com.github.ajalt.clikt.parameters.options.flag
+import com.github.ajalt.clikt.parameters.options.help
+import com.github.ajalt.clikt.parameters.options.option
+import com.github.ajalt.clikt.parameters.options.versionOption
 import com.github.ajalt.clikt.sources.PropertiesValueSource
-import org.dakralex.pricevista.parser.billa.BillaJsonParser
-import org.dakralex.pricevista.shops.RegisteredRetailers
+import org.dakralex.pricevista.cli.DropCommand
+import org.dakralex.pricevista.cli.GlobalConfig
+import org.dakralex.pricevista.cli.InitCommand
+import org.dakralex.pricevista.cli.UpdateCommand
 
 const val CONFIG_FILE = "datagen.properties"
-
-data class Config(
-    var databaseUri: String,
-    var databaseUser: String,
-    var databasePass: String,
-    var verbose: Boolean
-)
-
-class DatabaseOptions : OptionGroup(name = "Database options") {
-    val host by option("--db-host", valueSourceKey = "db.host")
-        .help("Changes database host")
-        .prompt("Host")
-
-    val port by option("--db-port", valueSourceKey = "db.port")
-        .help("Changes database port")
-        .int()
-        .default(1521)
-
-    val name by option("--db-name", valueSourceKey = "db.name")
-        .help("Changes database name")
-        .default("orclcdb")
-
-    val user by option("--db-user", valueSourceKey = "db.user")
-        .help("Changes database username")
-        .prompt("Username")
-
-    val pass by option("--db-pass", valueSourceKey = "db.pass")
-        .help("Changes database password")
-        .prompt("Password")
-}
 
 class DatagenCLI : CliktCommand(
     name = "datagen", help = """
@@ -55,68 +23,24 @@ class DatagenCLI : CliktCommand(
     """.trimIndent()
 ) {
     init {
-        versionOption(version())
+        versionOption(Version.getVersion())
         context {
             valueSource = PropertiesValueSource.from(CONFIG_FILE)
         }
     }
 
-    private val database by DatabaseOptions()
     private val verbose: Boolean by option("-v", "--verbose")
         .help("Enables verbose mode")
         .flag()
 
     override fun run() {
         val config =
-            Config(database.host, database.user, database.pass, verbose)
+            GlobalConfig(verbose)
 
         currentContext.obj = config
     }
 }
 
-val defaultRetailers: List<RegisteredRetailers> =
-    listOf(RegisteredRetailers.BILLA)
-
-class Init : CliktCommand(help = "Initialize the database") {
-    val retailers by option()
-        .help("Sets the online retailers that should be considered")
-        .enum<RegisteredRetailers>()
-        .split(",")
-        .default(defaultRetailers)
-
-    override fun run() {
-        TODO("Not yet implemented")
-    }
-}
-
-class Update : CliktCommand(help = "Update the database") {
-    private val type by argument().enum<RegisteredRetailers>()
-    private val files by argument().file(
-        mustExist = true,
-        mustBeReadable = true
-    ).multiple()
-
-    override fun run() {
-        when (type) {
-            RegisteredRetailers.BILLA -> BillaJsonParser.parseEntriesFromJson(
-                files
-            )
-
-            else -> TODO()
-        }
-    }
-}
-
-class Drop : CliktCommand(help = "Drop the database") {
-
-    override fun run() {
-        TODO("Not yet implemented")
-    }
-}
-
 fun main(args: Array<String>) =
-    DatagenCLI().subcommands(Init(), Update(), Drop()).main(args)
-
-
-// TODO Sync with gradle version
-fun version() = "1.0-SNAPSHOT"
+    DatagenCLI().subcommands(InitCommand(), UpdateCommand(), DropCommand())
+        .main(args)

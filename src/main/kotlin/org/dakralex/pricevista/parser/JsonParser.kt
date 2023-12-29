@@ -7,11 +7,11 @@ import java.io.InputStream
 private val logger = KotlinLogging.logger {}
 
 interface JsonParser {
-    fun parseEntriesFromJson(inputStream: InputStream)
+    fun parseEntries(inputStream: InputStream)
 
-    fun parseEntriesFromJson(files: List<File>) {
+    fun parseEntries(files: List<File>) {
         logger.info { "Parsing ${files.size} JSON files..." }
 
-        files.map { parseEntriesFromJson(it.inputStream()) }
+        files.map { parseEntries(it.inputStream()) }
     }
 }

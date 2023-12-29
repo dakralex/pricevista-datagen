@@ -1,4 +1,4 @@
-package org.dakralex.pricevista.parser.billa
+package org.dakralex.pricevista.parser.hofer
 
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.serialization.ExperimentalSerializationApi
@@ -12,17 +12,18 @@ import java.io.InputStream
 
 private val logger = KotlinLogging.logger {}
 
-object BillaJsonParser : JsonParser {
+// TODO Refactor so there is not so much duplicated code
+object HoferJsonParser : JsonParser {
     @OptIn(ExperimentalSerializationApi::class)
     override fun parseEntries(inputStream: InputStream) {
         val entries = inputStream.use {
-            Json.decodeFromStream<List<BillaJsonEntry>>(it)
+            Json.decodeFromStream<List<HoferJsonEntry>>(it)
         }
 
         logger.info { "Parsed ${entries.size} entries." }
 
         val brandNames = entries.mapNotNull {
-            it.brand?.name
+            it.brand
         }.distinctBy { it.uppercase() }
 
         logger.info { "Parsed ${brandNames.size} unique brands." }
@@ -39,15 +40,18 @@ object BillaJsonParser : JsonParser {
         }
 
         val articles = entries.map { article ->
-            val articleBrand = brands.find { it.name == article.brand?.name }
+            val articleBrand = brands.find { it.name == article.brand }
+            val articleName =
+                article.productName.replace(articleBrand?.name ?: "", "", true)
 
             Article(
-                name = article.name,
+                name = articleName,
                 brand = articleBrand,
-                description = article.descriptionLong,
-                imageUrl = article.images.firstOrNull()
+                description = article.description,
+                imageUrl = article.mediaUrlLarge
             )
         }
-    }
 
+        println(articles[0])
+    }
 }

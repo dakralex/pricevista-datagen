@@ -5,8 +5,3 @@ interface HasLocation {
     var adminArea: String?
     var locality: String?
 }
-
-interface HasExactLocation : HasLocation {
-    var postalCode: String?
-    var streetAddress: String?
-}
