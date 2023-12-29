@@ -1,4 +1,4 @@
-package org.dakralex.pricevista.datagen
+package org.dakralex.pricevista
 
 import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.core.context
@@ -12,7 +12,7 @@ import com.github.ajalt.clikt.parameters.types.enum
 import com.github.ajalt.clikt.parameters.types.file
 import com.github.ajalt.clikt.parameters.types.int
 import com.github.ajalt.clikt.sources.PropertiesValueSource
-import org.dakralex.pricevista.datagen.shops.RegisteredRetailers
+import org.dakralex.pricevista.shops.RegisteredRetailers
 
 const val CONFIG_FILE = "datagen.properties"
 

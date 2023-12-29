@@ -6,10 +6,11 @@ plugins {
     application
 }
 
-group = "org.dakralex.pricevista.datagen"
+group = "org.dakralex.pricevista"
 version = "1.0-SNAPSHOT"
 
 repositories {
+    mavenLocal()
     mavenCentral()
 }
 
@@ -17,7 +18,7 @@ dependencies {
     implementation("com.github.ajalt.clikt:clikt:$cliktVersion")
     implementation("com.oracle.database.jdbc:ojdbc11:$ojdbcVersion")
     implementation(kotlin("stdlib"))
-    testImplementation(kotlin("test"))
+    testImplementation("org.jetbrains.kotlin:kotlin-test")
 }
 
 tasks.test {
@@ -29,7 +30,7 @@ kotlin {
 }
 
 application {
-    mainClass.set("org.dakralex.pricevista.datagen.DatagenCLIKt")
+    mainClass.set("$group.DatagenCLIKt")
 }
 
 tasks.jar {

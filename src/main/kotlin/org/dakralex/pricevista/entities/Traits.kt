@@ -1,4 +1,4 @@
-package org.dakralex.pricevista.datagen.entities
+package org.dakralex.pricevista.entities
 
 interface HasLocation {
     var country: String

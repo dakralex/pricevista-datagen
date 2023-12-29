@@ -1,4 +1,4 @@
-package org.dakralex.pricevista.datagen.database
+package org.dakralex.pricevista.database
 
 abstract class Table(val tableName: String) {
     abstract fun create()

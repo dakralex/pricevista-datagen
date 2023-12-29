@@ -1,4 +1,4 @@
-package org.dakralex.pricevista.datagen.database
+package org.dakralex.pricevista.database
 
 import java.sql.Connection
 import java.sql.DriverManager

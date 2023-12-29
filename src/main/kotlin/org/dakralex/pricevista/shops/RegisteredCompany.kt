@@ -1,7 +1,7 @@
-package org.dakralex.pricevista.datagen.shops
+package org.dakralex.pricevista.shops
 
-import org.dakralex.pricevista.datagen.entities.Company
-import org.dakralex.pricevista.datagen.entities.Retailer
+import org.dakralex.pricevista.entities.Company
+import org.dakralex.pricevista.entities.Retailer
 
 // TODO Refactor this to a cleaner version
 enum class RegisteredCompany(val company: Company) {
@@ -16,10 +16,50 @@ enum class RegisteredCompany(val company: Company) {
             "Industriezentrum NÖ-Süd, Straße 3, Objekt 16"
         )
     ),
-    AUT_DM_GMBH(Company(2, "dm drogerie markt GmbH", "AUT", "Salzburg", "Wals", "5071", "Günter-Bauer-Straße 1")),
-    AUT_HOFER_KG(Company(3, "HOFER KG", "AUT", "Oberösterreich", "Sattledt", "4642", "Hofer Straße 1")),
-    AUT_LIDL_GMBH(Company(4, "Lidl Österreich GmbH", "AUT", "Salzburg", "Salzburg", "5020", "Unter der Leiten 11")),
-    AUT_MPREIS_GMBH(Company(5, "MPREIS Warenvertriebs GmbH", "AUT", "Tirol", "Völs", "6176", "Landesstraße 16")),
+    AUT_DM_GMBH(
+        Company(
+            2,
+            "dm drogerie markt GmbH",
+            "AUT",
+            "Salzburg",
+            "Wals",
+            "5071",
+            "Günter-Bauer-Straße 1"
+        )
+    ),
+    AUT_HOFER_KG(
+        Company(
+            3,
+            "HOFER KG",
+            "AUT",
+            "Oberösterreich",
+            "Sattledt",
+            "4642",
+            "Hofer Straße 1"
+        )
+    ),
+    AUT_LIDL_GMBH(
+        Company(
+            4,
+            "Lidl Österreich GmbH",
+            "AUT",
+            "Salzburg",
+            "Salzburg",
+            "5020",
+            "Unter der Leiten 11"
+        )
+    ),
+    AUT_MPREIS_GMBH(
+        Company(
+            5,
+            "MPREIS Warenvertriebs GmbH",
+            "AUT",
+            "Tirol",
+            "Völs",
+            "6176",
+            "Landesstraße 16"
+        )
+    ),
     AUT_MUELLER_HANDELS_GMBH(
         Company(
             6,
