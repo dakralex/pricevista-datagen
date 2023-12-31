@@ -9,7 +9,7 @@ val kotlinLoggingVersion = "5.+"
 val kotlinSerializationJsonVersion = "1.+"
 
 group = "org.dakralex.pricevista"
-version = "1.0-SNAPSHOT"
+version = "0.9.0-SNAPSHOT"
 
 plugins {
     kotlin("jvm") version "1.9.21"
@@ -53,15 +53,7 @@ tasks {
     }
 }
 
-val resourcesDir = "src/resources"
-
-sourceSets {
-    main {
-        resources {
-            srcDirs(resourcesDir)
-        }
-    }
-}
+val resourcesDir = "src/main/resources"
 
 tasks.register("generateVersionProperties") {
     group = JavaBasePlugin.BUILD_TASK_NAME
