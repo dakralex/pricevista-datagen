@@ -107,3 +107,6 @@ replay_pid*
 
 # Data directory
 data
+
+# Version.properties file
+src/main/resources/version.properties
