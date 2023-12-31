@@ -51,6 +51,12 @@ enum class BillaJsonBadges {
     GS_BIO,
 
     /**
+     * International Demeter (organic food) certification
+     */
+    @SerialName("gs-demeter")
+    GS_DEMETER,
+
+    /**
      * Italian Denominazione di origine controllata (DOC) certification
      */
     @SerialName("gs-doc")

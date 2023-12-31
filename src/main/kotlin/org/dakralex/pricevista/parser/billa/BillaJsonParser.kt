@@ -44,10 +44,13 @@ object BillaJsonParser : JsonParser {
             Article(
                 name = article.name,
                 brand = articleBrand,
-                description = article.descriptionLong,
+                description = article.descriptionLong
+                    ?: article.descriptionShort,
                 imageUrl = article.images.firstOrNull()
             )
         }
+
+        println(articles[0])
     }
 
 }
