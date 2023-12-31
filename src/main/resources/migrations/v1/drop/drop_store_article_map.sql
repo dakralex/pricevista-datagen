@@ -1,0 +1,1 @@
+drop table Store_Article_Map;
