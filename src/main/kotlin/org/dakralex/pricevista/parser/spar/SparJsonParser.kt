@@ -4,54 +4,41 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromStream
-import org.dakralex.pricevista.entities.Article
-import org.dakralex.pricevista.entities.Brand
-import org.dakralex.pricevista.entities.Company
 import org.dakralex.pricevista.parser.JsonParser
 import java.io.InputStream
 
 private val logger = KotlinLogging.logger {}
 
-// TODO Refactor so there is not so much duplicated code
-object SparJsonParser : JsonParser {
+object SparJsonParser : JsonParser<SparJsonEntry>() {
     @OptIn(ExperimentalSerializationApi::class)
-    override fun parseEntries(inputStream: InputStream) {
-        val products = inputStream.use {
-            Json.decodeFromStream<List<SparJsonEntry>>(it)
-        }.map { it.masterValues }
+    override fun decodeJsonFromInputStream(inputStream: InputStream): List<SparJsonEntry> {
+        return inputStream.use { Json.decodeFromStream(it) }
+    }
 
-        logger.info { "Parsed ${products.size} entries." }
+    override fun parseArticleFullName(entry: SparJsonEntry): String {
+        return entry.masterValues.shortDescription ?: entry.masterValues.title
+    }
 
-        val brandNames = products.mapNotNull {
-            it.brand?.first()
-        }.distinctBy { it.uppercase() }
+    override fun parseBrandName(entry: SparJsonEntry): String {
+        val ecrBrand = entry.masterValues.ecrBrand
+        val brand = entry.masterValues.brand?.reversed()?.joinToString { " " }
 
-        logger.info { "Parsed ${brandNames.size} unique brands." }
-        logger.debug { "Examples: ${brandNames.slice(0..9)}" }
-
-        // TODO Find out in which country these companies operate
-        val brandCompanies = brandNames.map {
-            Company(name = it, country = "AUT")
+        if (brand == null && ecrBrand == null) {
+            logger.warn { "Brand and ECR brand for article '${entry.masterValues.name}' are null" }
         }
 
-        // TODO Remove product line
-        val brands = brandCompanies.map {
-            Brand(it, "Unknown")
+        if (brand != ecrBrand) {
+            logger.warn { "Brand and ECR brand for article '${entry.masterValues.name}' are not equal: '$brand' != '$ecrBrand'" }
         }
 
-        val articles = products.map { article ->
-            val articleBrand = brands.find { it.name == article.brand?.first() }
-            val articleName =
-                article.name
+        return ecrBrand ?: brand ?: "Unknown"
+    }
 
-            Article(
-                name = articleName,
-                brand = articleBrand,
-                description = article.description,
-                imageUrl = article.imageUrl
-            )
-        }
+    override fun parseDescription(entry: SparJsonEntry): String? {
+        return entry.masterValues.description
+    }
 
-        println(articles[0])
+    override fun parseImageUrl(entry: SparJsonEntry): String {
+        return entry.masterValues.imageUrl
     }
 }

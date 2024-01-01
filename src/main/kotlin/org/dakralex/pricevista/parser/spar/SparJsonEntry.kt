@@ -1,6 +1,7 @@
 package org.dakralex.pricevista.parser.spar
 
 import kotlinx.serialization.Serializable
+import org.dakralex.pricevista.parser.JsonEntry
 
 @Serializable
 data class SparJsonEntry(
@@ -10,4 +11,4 @@ data class SparJsonEntry(
     val foundWords: List<String>? = null,
     val variantValues: List<String>? = null,
     val masterValues: SparJsonProduct
-)
+) : JsonEntry

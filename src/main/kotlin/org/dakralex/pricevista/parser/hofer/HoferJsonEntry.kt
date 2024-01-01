@@ -2,6 +2,7 @@ package org.dakralex.pricevista.parser.hofer
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import org.dakralex.pricevista.parser.JsonEntry
 
 @Serializable
 data class HoferJsonEntry(
@@ -69,4 +70,4 @@ data class HoferJsonEntry(
     val selectedShopIsBulk: Boolean,
     val startStepValue: Double? = null,
     val unitPrice: Double
-)
+) : JsonEntry

@@ -2,6 +2,7 @@ package org.dakralex.pricevista.parser.billa
 
 import kotlinx.serialization.Serializable
 import org.dakralex.pricevista.parser.DoubleAsStringSerializer
+import org.dakralex.pricevista.parser.JsonEntry
 
 @Serializable
 data class BillaJsonEntry(
@@ -40,4 +41,4 @@ data class BillaJsonEntry(
     val weightArticle: Boolean,
     val weightPerPiece: Double,
     val weightPieceArticle: Boolean,
-)
+) : JsonEntry
