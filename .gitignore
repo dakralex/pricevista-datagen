@@ -106,7 +106,7 @@ hs_err_pid*
 replay_pid*
 
 # Data directory
-data
+/data
 
 # Version.properties file
 src/main/resources/version.properties

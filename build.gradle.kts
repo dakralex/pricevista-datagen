@@ -3,17 +3,19 @@ import org.gradle.nativeplatform.platform.internal.DefaultNativePlatform
 import java.io.FileOutputStream
 import java.util.*
 
+group = "org.dakralex.pricevista"
+version = "0.9.0-SNAPSHOT"
+
+val resourcesDir = "src/main/resources"
+
+val operatingSystem: OperatingSystem = DefaultNativePlatform.getCurrentOperatingSystem()
+
 val cliktVersion = "4.+"
 val slf4jVersion = "2.+"
 val brotliVersion = "1.15.0"
 val ojdbc11Version = "23.+"
 val kotlinLoggingVersion = "5.+"
 val kotlinSerializationJsonVersion = "1.+"
-
-val operatingSystem: OperatingSystem = DefaultNativePlatform.getCurrentOperatingSystem()
-
-group = "org.dakralex.pricevista"
-version = "0.9.0-SNAPSHOT"
 
 plugins {
     kotlin("jvm") version "1.9.21"
@@ -86,8 +88,6 @@ tasks {
         }
     }
 }
-
-val resourcesDir = "src/main/resources"
 
 tasks.register("generateVersionProperties") {
     group = JavaBasePlugin.BUILD_TASK_NAME
