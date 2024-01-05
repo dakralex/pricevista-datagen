@@ -1,7 +1,7 @@
 create table Brand
 (
-    brand_id     integer not null,
-    product_line varchar(50),
-    constraint pk_Brand primary key (brand_id),
-    constraint fk_Brand_Company foreign key (brand_id) references Company (company_id) on delete cascade
-);
+    id       integer not null,
+    logo_url varchar(2083),
+    constraint pk_Brand primary key (id),
+    constraint fk_Brand_Company foreign key (id) references Company (id) on delete cascade
+)

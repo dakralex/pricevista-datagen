@@ -1,11 +1,16 @@
 package org.dakralex.pricevista.entities
 
-class Company(
-    val id: Number? = null,
+/**
+ * The [Company] entity is the generalization of the different companies that
+ * are somewhere in the supply chain. In this micro-world, they are retailers
+ * and brands.
+ */
+data class Company(
+    val id: Int? = null,
+
+    /** Full name of the company **/
     var name: String,
-    override var country: String,
-    override var adminArea: String? = "",
-    override var locality: String? = "",
-    override var postalCode: String? = "",
-    override var streetAddress: String? = ""
-) : HasExactLocation
+
+    /** Physical location of the company's headquarters **/
+    var place: Place? = null
+)
