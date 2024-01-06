@@ -9,7 +9,10 @@ data class Company(
     val id: Int? = null,
 
     /** Full name of the company **/
-    var name: String,
+    var longName: String? = null,
+
+    /** Short name of the company **/
+    var shortName: String,
 
     /** Physical location of the company's headquarters **/
     var place: Place? = null

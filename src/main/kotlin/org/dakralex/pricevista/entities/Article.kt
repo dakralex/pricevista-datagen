@@ -1,5 +1,7 @@
 package org.dakralex.pricevista.entities
 
+import java.math.BigDecimal
+
 /**
  * The [Article] entity describes an article that is available in one or more
  * stores of the retailers with some details.
@@ -23,7 +25,7 @@ data class Article(
     var unit: MeasurementUnit,
 
     /** Quantity of the article in the measurement unit **/
-    var quantity: Double,
+    var quantity: BigDecimal,
 
     /** Whether the article can be bought in bulk by weighing it */
     var weightable: Boolean

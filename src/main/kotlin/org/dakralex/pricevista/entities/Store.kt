@@ -18,5 +18,8 @@ data class Store(
     var place: Place,
 
     /** Currency of the store **/
-    var currency: Currency
+    var currency: Currency,
+
+    /** Language of the store **/
+    var language: Language
 )
