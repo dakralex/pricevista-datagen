@@ -34,8 +34,7 @@ class DatagenCLI : CliktCommand(
         .flag()
 
     override fun run() {
-        val config =
-            GlobalConfig(verbose)
+        val config = GlobalConfig(verbose)
 
         currentContext.obj = config
     }
