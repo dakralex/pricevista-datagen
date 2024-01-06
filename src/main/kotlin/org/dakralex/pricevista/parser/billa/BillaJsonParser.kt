@@ -15,8 +15,8 @@ object BillaJsonParser : JsonParser<BillaJsonEntry>() {
         return inputStream.use { Json.decodeFromStream(it) }
     }
 
-    override fun parseArticleFullName(entry: BillaJsonEntry): String {
-        return entry.name
+    override fun parseInternalIdentifier(entry: BillaJsonEntry): String {
+        return entry.productId
     }
 
     override fun parseBrandName(entry: BillaJsonEntry): String {
@@ -29,12 +29,20 @@ object BillaJsonParser : JsonParser<BillaJsonEntry>() {
         return brand ?: "Unknown"
     }
 
-    override fun parseDescription(entry: BillaJsonEntry): String? {
+    override fun parseArticleFullName(entry: BillaJsonEntry): String {
+        return entry.name
+    }
+
+    override fun parseLongDescription(entry: BillaJsonEntry): String? {
         return entry.descriptionLong
             ?: entry.descriptionShort
     }
 
-    override fun parseImageUrl(entry: BillaJsonEntry): String? {
-        return entry.images.firstOrNull()
+    override fun parseIsWeightable(entry: BillaJsonEntry): Boolean {
+        return entry.weightArticle // TODO Is that enough?
+    }
+
+    override fun parseImageUrls(entry: BillaJsonEntry): List<String> {
+        return entry.images
     }
 }
