@@ -8,13 +8,13 @@ data class Currency(
     val alpha3: String,
 
     /** Number of digits for the subunit */
-    val subExponent: Int,
+    val scale: Int,
 
     /** Symbol of the currency **/
     val symbol: String,
 
     /** Symbol of the currency's subunit */
-    val subSymbol: String? = null,
+    val minor: String? = null,
 
     /** English name of the currency **/
     val name: String
