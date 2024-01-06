@@ -167,7 +167,7 @@ const getPropTypes = (obj, path = null) => {
  * @param peek {Number} amount of entries to show
  * @returns {*}
  */
-const getUniqueValues = (obj, path = null, peek = obj.length) => {
+const getUniqueValues = (obj, path = null, peek = -1) => {
   const uniqueProps = cacheCall(getUniqueProps, obj, path);
 
   const propValuesMap = uniqueProps.map(prop => [
@@ -178,4 +178,25 @@ const getUniqueValues = (obj, path = null, peek = obj.length) => {
   ]);
 
   return Object.fromEntries(propValuesMap);
+};
+
+/**
+ *
+ * @param obj {Array} Object to be evaluated
+ * @param prop {String} property to evaluate
+ * @param peek {Number} amount of entries to show
+ * @returns {{[p: string]: any}}
+ */
+const getUniquePropValues = (obj, prop, peek = -1) => {
+  const propValues = obj.slice(0, peek).
+      map(entry => entry?.[prop]).
+      flat().
+      filter(unique);
+
+  return Object.fromEntries([
+    [
+      String(prop),
+      propValues,
+    ]
+  ]);
 };
