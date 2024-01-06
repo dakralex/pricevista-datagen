@@ -13,8 +13,6 @@ import org.dakralex.pricevista.cli.GlobalConfig
 import org.dakralex.pricevista.cli.InitCommand
 import org.dakralex.pricevista.cli.UpdateCommand
 
-const val CONFIG_FILE = "datagen.properties"
-
 class DatagenCLI : CliktCommand(
     name = "datagen", help = """
     This is a command line tool to manage the database content of PriceVista 
