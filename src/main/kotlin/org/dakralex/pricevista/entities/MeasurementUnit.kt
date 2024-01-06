@@ -1,5 +1,8 @@
 package org.dakralex.pricevista.entities
 
+import org.dakralex.pricevista.database.Database
+import org.dakralex.pricevista.database.Entity
+
 /**
  * The [MeasurementUnit] entity describes units something can be measured in.
  */
@@ -11,4 +14,14 @@ data class MeasurementUnit(
 
     /** English name of the measurement unit **/
     val name: String,
-)
+) : Entity {
+    override val tableName = "Measurement_Unit"
+    override val insertStatement = """
+        insert into $tableName (id, symbol, name)
+        values (:id, :symbol, :name)
+    """.trimIndent()
+
+    override fun insert(db: Database) {
+        db.update(insertStatement, id, symbol, name)
+    }
+}

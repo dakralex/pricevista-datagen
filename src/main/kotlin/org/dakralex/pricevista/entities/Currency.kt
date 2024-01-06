@@ -1,5 +1,8 @@
 package org.dakralex.pricevista.entities
 
+import org.dakralex.pricevista.database.Database
+import org.dakralex.pricevista.database.Entity
+
 data class Currency(
     /** ISO 4217 three-digit currency code **/
     val id: Int,
@@ -18,4 +21,14 @@ data class Currency(
 
     /** English name of the currency **/
     val name: String
-)
+) : Entity {
+    override val tableName = "Currency"
+    override val insertStatement = """
+        insert into $tableName (id, alpha3, scale, symbol, minor, name)
+        values (:id, :alpha3, :scale, :symbol, :minor, :name)
+    """.trimIndent()
+
+    override fun insert(db: Database) {
+        db.update(insertStatement, id, alpha3, scale, symbol, minor, name)
+    }
+}

@@ -1,5 +1,8 @@
 package org.dakralex.pricevista.entities
 
+import org.dakralex.pricevista.database.Database
+import org.dakralex.pricevista.database.Entity
+
 /**
  * The [Place] entity describes a location in the physical world
  */
@@ -20,4 +23,22 @@ data class Place(
 
     /** Street address line of the place **/
     var streetAddress: String? = null
-)
+) : Entity {
+    override val tableName = "Place"
+    override val insertStatement = """
+        insert into $tableName (id, country_id, admin_area, locality, postal_code, street_address)
+        values (:id, :countryId, :adminArea, :locality, :postalCode, :streetAddress)
+    """.trimIndent()
+
+    override fun insert(db: Database) {
+        db.update(
+            insertStatement,
+            id,
+            country.id,
+            adminArea,
+            locality,
+            postalCode,
+            streetAddress
+        )
+    }
+}
