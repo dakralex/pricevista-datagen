@@ -12,6 +12,7 @@ data class BillaJsonEntry(
     val badges: List<BillaJsonBadges>? = null,
     val brand: BillaJsonBrand? = null,
     val category: String? = null,
+    val countryOfOrigin: String? = null,
     val depositType: String? = null,
     val descriptionShort: String? = null,
     val descriptionLong: String? = null,
@@ -27,6 +28,8 @@ data class BillaJsonEntry(
     val parentCategories: List<List<BillaJsonParentCategory>>,
     val preparationTime: Int? = null,
     val price: BillaJsonPriceInfo,
+
+    /** Internal article identifier in UUIDv4 format **/
     val productId: String,
     val productMarketing: String? = null,
     val purchased: Boolean,
@@ -38,6 +41,8 @@ data class BillaJsonEntry(
     val volumeLabelLong: String,
     val volumeLabelShort: String? = null,
     val weight: Double,
+
+    /** Whether the article is sold by weighing it and calculating the price per unit (e.g. per kilogram) **/
     val weightArticle: Boolean,
     val weightPerPiece: Double,
     val weightPieceArticle: Boolean,

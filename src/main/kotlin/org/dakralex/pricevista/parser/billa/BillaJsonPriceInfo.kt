@@ -3,26 +3,6 @@ package org.dakralex.pricevista.parser.billa
 import kotlinx.serialization.Serializable
 import org.dakralex.pricevista.parser.IntAsStringSerializer
 
-/**
- * This value class represents a price value in a JSON export, where the prices
- * are stored as whole integers to the smallest money unit (e.g. Euro cents).
- */
-@JvmInline
-@Serializable
-value class BillaJsonPrice(val value: Int)
-
-@Serializable
-data class BillaJsonPriceCategory(
-    val perStandardizedQuantity: BillaJsonPrice,
-    val promotionQuantity: Int? = null,
-    val promotionText: String? = null,
-    val promotionType: BillaPromotionType? = null,
-    val promotionValue: BillaJsonPrice? = null,
-    val promotionValuePerStandardizedQuantity: Int? = null,
-    val tags: List<String>, // TODO Use enum class JsonBillaPriceTag in the future
-    val value: BillaJsonPrice
-)
-
 @Serializable
 data class BillaJsonPriceInfo(
     /**

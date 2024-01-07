@@ -12,7 +12,7 @@ fun guessMeasurementUnit(
 
     val longNameCandidate = when (longNameLowercased) {
         "gram", "gramm" -> EMeasurementUnit.METRIC_GRAM
-        "kilo", "kilogram", "kilogramm" -> EMeasurementUnit.METRIC_KILOGRAM
+        "kg", "kilo", "kilogram", "kilogramm" -> EMeasurementUnit.METRIC_KILOGRAM
         "metre", "meter" -> EMeasurementUnit.METRIC_METRE
         "centimetre", "centimeter", "zentimeter" -> EMeasurementUnit.METRIC_CENTIMETRE
         "litre", "liter" -> EMeasurementUnit.METRIC_LITRE
