@@ -19,7 +19,7 @@ object HoferJsonParser : JsonParser<HoferJsonEntry>() {
         return entry.productId.toString()
     }
 
-    override fun parseBrandName(entry: HoferJsonEntry): String {
+    override fun parseBrandName(entry: HoferJsonEntry): String? {
         // TODO See if providerDetails has any more info on this
         val brand = entry.brand
 
@@ -27,7 +27,7 @@ object HoferJsonParser : JsonParser<HoferJsonEntry>() {
             logger.warn { "Brand field for article '${entry.productName}' is null" }
         }
 
-        return brand ?: "Unknown"
+        return brand
     }
 
     override fun parseArticleFullName(entry: HoferJsonEntry): String {

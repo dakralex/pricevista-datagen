@@ -6,7 +6,7 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromStream
 import org.dakralex.pricevista.QUANTITY_MATH_CONTEXT
 import org.dakralex.pricevista.entities.MeasurementUnit
-import org.dakralex.pricevista.entities.data.EMeasurementUnit
+import org.dakralex.pricevista.entities.dictionary.guessMeasurementUnit
 import org.dakralex.pricevista.parser.JsonParser
 import java.io.InputStream
 import java.math.BigDecimal
@@ -14,6 +14,11 @@ import java.math.BigDecimal
 private val logger = KotlinLogging.logger {}
 
 object SparJsonParser : JsonParser<SparJsonEntry>() {
+    private val decimalSepRegex = Regex("""\,""")
+    private val unitRegex = Regex("""[\sa-z]+""")
+    private val quantityRegex = Regex("""[\,\.\d]""")
+    private val depositTypeRegex = Regex("""(einweg|mehrweg)""")
+
     @OptIn(ExperimentalSerializationApi::class)
     override fun decodeJsonFromInputStream(inputStream: InputStream): List<SparJsonEntry> {
         return inputStream.use { Json.decodeFromStream(it) }
@@ -23,18 +28,31 @@ object SparJsonParser : JsonParser<SparJsonEntry>() {
         return entry.masterValues.productNumber
     }
 
-    override fun parseBrandName(entry: SparJsonEntry): String {
+    override fun parseBrandName(entry: SparJsonEntry): String? {
         val ecrBrand = entry.masterValues.ecrBrand
         val brand = entry.masterValues.brand?.reversed()?.joinToString(" ")
 
+        // TODO If this happens, search in the product name a value of the brand repository
         if (brand == null && ecrBrand == null) {
-            logger.warn { "Brand and ECR brand for article '${entry.masterValues.name}' are null" }
+            logger.warn {
+                "Brand and ECR brand for article '${entry.masterValues.name}' (${
+                    parseInternalIdentifier(
+                        entry
+                    )
+                }) are null"
+            }
         }
 
-        return ecrBrand ?: brand ?: "Unknown"
+        return ecrBrand ?: brand
     }
 
     override fun parseArticleFullName(entry: SparJsonEntry): String {
+        if (entry.masterValues.shortDescription2 == null ||
+            entry.masterValues.shortDescription == entry.masterValues.shortDescription3
+        ) {
+            return entry.masterValues.title
+        }
+
         return entry.masterValues.shortDescription ?: entry.masterValues.title
     }
 
@@ -43,40 +61,38 @@ object SparJsonParser : JsonParser<SparJsonEntry>() {
     }
 
     override fun parseMeasurementUnit(entry: SparJsonEntry): MeasurementUnit {
-        return EMeasurementUnit.PIECE.unit
+        val shortDesc3 = entry.masterValues.shortDescription3?.lowercase()
 
-//        val descriptor = entry.masterValues.shortDescription3?.lowercase()
-//        val descriptors = descriptor
-//            ?.replace("""/\d*/g""".toRegex(), "")
-//            ?.trim()
-//            ?.split(" ")
-//            ?: listOf()
-//
-//        return descriptors.map { desc ->
-//            return when (desc) {
-//                "stk" -> EMeasurementUnit.PIECE.unit
-//                else -> EMeasurementUnit.entries.first { it.name == desc }.unit
-//            }
-//        }.first<MeasurementUnit>()
+        val unitDescriptor = shortDesc3?.replace(quantityRegex, "")
+            ?.replace(depositTypeRegex, "")?.trim()
+
+        // TODO Implement second trial with pricePerUnit property
+        //      and /[\,\.\d\€\/]+/g as the removal regex
+
+        return guessMeasurementUnit(shortName = unitDescriptor)
+            ?: super.parseMeasurementUnit(entry)
     }
 
     override fun parseQuantity(entry: SparJsonEntry): BigDecimal {
-        return BigDecimal(0.0, QUANTITY_MATH_CONTEXT)
+        val shortDesc3 = entry.masterValues.shortDescription3?.lowercase()
 
-//        val descriptor = entry.masterValues.shortDescription3?.lowercase()
-//        val descriptors = descriptor
-//            ?.replace("""/\w*/g""".toRegex(), "")
-//            ?.replace(",", ".")
-//            ?.trim()
-//            ?.split(" ")
-//            ?: listOf()
-//
-//        return descriptors.map { desc ->
-//            BigDecimal(
-//                desc,
-//                QUANTITY_MATH_CONTEXT
-//            )
-//        }.first()
+        val quantityDescriptor = shortDesc3?.replace(unitRegex, "")
+            ?.replace(decimalSepRegex, ".")?.trim()
+
+        try {
+            return BigDecimal(quantityDescriptor, QUANTITY_MATH_CONTEXT)
+        } catch (e: RuntimeException) {
+            logger.warn {
+                "Could not parse quantity with shortDesc3 = '$shortDesc3' " +
+                        "and quantityDescriptor = '$quantityDescriptor' for article " +
+                        "'${entry.masterValues.name}' (${
+                            parseInternalIdentifier(
+                                entry
+                            )
+                        }).\n$e"
+            }
+            return super.parseQuantity(entry)
+        }
     }
 
     override fun parseIsWeightable(entry: SparJsonEntry): Boolean {

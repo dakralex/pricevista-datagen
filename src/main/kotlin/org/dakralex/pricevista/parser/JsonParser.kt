@@ -5,32 +5,16 @@ import com.aayushatharva.brotli4j.decoder.Decoder
 import com.aayushatharva.brotli4j.decoder.DecoderJNI
 import com.aayushatharva.brotli4j.decoder.DirectDecompress
 import io.github.oshai.kotlinlogging.KotlinLogging
-import kotlinx.serialization.modules.SerializersModule
-import kotlinx.serialization.modules.polymorphic
-import kotlinx.serialization.modules.subclass
 import org.dakralex.pricevista.QUANTITY_MATH_CONTEXT
 import org.dakralex.pricevista.entities.*
 import org.dakralex.pricevista.entities.data.EMeasurementUnit
-import org.dakralex.pricevista.entities.data.EPlace
-import org.dakralex.pricevista.parser.billa.BillaJsonEntry
-import org.dakralex.pricevista.parser.hofer.HoferJsonEntry
-import org.dakralex.pricevista.parser.spar.SparJsonEntry
 import java.io.ByteArrayInputStream
 import java.io.File
 import java.io.InputStream
 import java.math.BigDecimal
-import kotlin.math.min
 
 
 private val logger = KotlinLogging.logger {}
-
-val module = SerializersModule {
-    polymorphic(JsonEntry::class) {
-        subclass(BillaJsonEntry.serializer())
-        subclass(HoferJsonEntry.serializer())
-        subclass(SparJsonEntry.serializer())
-    }
-}
 
 abstract class JsonParser<T : JsonEntry> {
     private var parsedCompanies: List<Company> = mutableListOf()
@@ -48,19 +32,19 @@ abstract class JsonParser<T : JsonEntry> {
 
     abstract fun parseInternalIdentifier(entry: T): String
 
-    abstract fun parseBrandName(entry: T): String
+    abstract fun parseBrandName(entry: T): String?
 
     abstract fun parseArticleFullName(entry: T): String
 
     abstract fun parseLongDescription(entry: T): String?
 
-    open fun parseOrigin(entry: T): Place? = null
+    open fun parseOriginCountry(entry: T): Country? = null
 
     open fun parseMeasurementUnit(entry: T): MeasurementUnit =
-        EMeasurementUnit.PIECE.unit
+        EMeasurementUnit.MISC_PIECE.unit
 
     open fun parseQuantity(entry: T): BigDecimal =
-        BigDecimal(0.0, QUANTITY_MATH_CONTEXT)
+        BigDecimal(1.0, QUANTITY_MATH_CONTEXT)
 
     open fun parseIsWeightable(entry: T): Boolean = false
 
@@ -75,9 +59,9 @@ abstract class JsonParser<T : JsonEntry> {
             ?: brands.find { parseArticleFullName(entry).contains(it.company.shortName) }
     }
 
-    private fun parseArticleName(entry: T, brand: Brand): String {
+    private fun parseArticleName(entry: T, brand: Brand?): String {
         return parseArticleFullName(entry)
-            .replace(brand.company.shortName, "", true).trim()
+            .replace(brand?.company?.shortName ?: "", "", true).trim()
     }
 
     private fun parseEntries(inputStream: InputStream) {
@@ -86,41 +70,22 @@ abstract class JsonParser<T : JsonEntry> {
         val entries = decodeJsonFromInputStream(inputStream)
         logger.info { "Parsed ${entries.size} entries." }
 
-        val brands =
-            entries.map { parseBrandName(it) }.distinctBy(String::uppercase)
-        // TODO Find out in which country these companies operate
-        parsedCompanies += brands.map {
-            Company(
-                shortName = it,
-                place = EPlace.AUT_GENERAL.place
-            )
-        }
-        // TODO Remove product line from data structure
-        parsedBrands += parsedCompanies.map { Brand(it, "Unspecified") }
+        val brands = entries.mapNotNull { parseBrandName(it) }
+            .distinctBy(String::lowercase)
+        parsedCompanies += brands.map { Company(shortName = it) }
 
-        val parsedBrandsSize = parsedBrands.size
-        if (logger.isDebugEnabled()) {
-            val sampleSize = min(parsedBrandsSize, 9)
-            val sample = brands.slice(0..sampleSize)
-            logger.debug { "Sample: $sample" }
-        }
-        logger.info { "Parsed $parsedBrandsSize unique brands." }
+        parsedBrands += parsedCompanies.map { Brand(it) }
+        logger.info { "Parsed ${parsedBrands.size} unique brands." }
 
         parsedArticles += entries.map { entry ->
             // TODO Find store's default brand or something similar
             val articleBrand = parseArticleBrand(entry)
-                ?: Brand(
-                    company = Company(
-                        shortName = "Unknown",
-                        place = EPlace.AUT_GENERAL.place
-                    )
-                )
 
             Article(
                 brand = articleBrand,
                 name = parseArticleName(entry, articleBrand),
                 description = parseLongDescription(entry),
-                origin = parseOrigin(entry),
+                originCountry = parseOriginCountry(entry),
                 unit = parseMeasurementUnit(entry),
                 quantity = parseQuantity(entry),
                 weightable = parseIsWeightable(entry)
