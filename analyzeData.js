@@ -100,7 +100,23 @@ const getLatestEntries = (name) => {
 
 const unique = (val, idx, arr) => arr.indexOf(val) === idx;
 
+const except = (props) => {
+  let mProps = Array.isArray(props) ? props : [props];
+
+  return (entry) => {
+    return mProps.reduce((curr, prop) => {
+      let {[prop]: _, ...rest} = curr;
+
+      return rest;
+    }, entry);
+  };
+};
+
 // Helper functions for object traversal
+
+const peekObject = (obj, peek = -1) => {
+  return obj.slice(0, peek);
+};
 
 const getDescendant = (obj, path = null) => {
   if (path == null) {
@@ -169,12 +185,11 @@ const getPropTypes = (obj, path = null) => {
  */
 const getUniqueValues = (obj, path = null, peek = -1) => {
   const uniqueProps = cacheCall(getUniqueProps, obj, path);
+  const mObj = peekObject(obj, peek);
 
   const propValuesMap = uniqueProps.map(prop => [
     String(prop),
-    obj.slice(0, peek).
-        map(entry => getDescendant(entry, path)?.[prop]).
-        filter(unique),
+    mObj.map(entry => getDescendant(entry, path)?.[prop]).filter(unique),
   ]);
 
   return Object.fromEntries(propValuesMap);
@@ -183,20 +198,15 @@ const getUniqueValues = (obj, path = null, peek = -1) => {
 /**
  *
  * @param obj {Array} Object to be evaluated
- * @param prop {String} property to evaluate
+ * @param props {String|Array<String>} properties to evaluate
  * @param peek {Number} amount of entries to show
  * @returns {{[p: string]: any}}
  */
-const getUniquePropValues = (obj, prop, peek = -1) => {
-  const propValues = obj.slice(0, peek).
-      map(entry => entry?.[prop]).
-      flat().
-      filter(unique);
+const getUniquePropValues = (obj, props, peek = -1) => {
+  let mProps = Array.isArray(props) ? props : [props];
+  const mObj = peekObject(obj, peek);
 
-  return Object.fromEntries([
-    [
-      String(prop),
-      propValues,
-    ]
-  ]);
+  return mProps.map(prop => mObj.
+      map(entry => entry?.[prop])).flat().filter(unique);
 };
+
