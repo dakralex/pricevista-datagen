@@ -10,19 +10,22 @@ import org.dakralex.pricevista.database.Entity
 data class MeasurementUnit(
     val id: Int? = null,
 
-    /** Symbol of the measurement unit **/
-    val symbol: String,
+    /** Symbol or label of the measurement unit **/
+    val label: String,
 
-    /** English name of the measurement unit **/
-    val name: String,
+    /** English name of the measurement unit in singular **/
+    val singularName: String = label,
+
+    /** English name of the measurement unit in plural **/
+    val pluralName: String = singularName + "s",
 ) : Entity {
     override val tableName = "Measurement_Unit"
     override val insertStatement = """
-        insert into $tableName (id, symbol, name)
-        values (:id, :symbol, :name)
+        insert into $tableName (id, label, singular_name, plural_name)
+        values (:id, :label, :singularName, :pluralName)
     """.trimIndent()
 
     override fun insert(db: Database) {
-        db.update(insertStatement, id, symbol, name)
+        db.update(insertStatement, id, label, singularName, pluralName)
     }
 }
