@@ -3,6 +3,10 @@ package org.dakralex.pricevista.entities
 import org.dakralex.pricevista.database.Database
 import org.dakralex.pricevista.database.Entity
 
+/**
+ * The [Country] entity describes a country that is represented in the
+ * ISO 3166-1 standard definition.
+ */
 data class Country(
     /** ISO 3166-1 numeric three-digit country code **/
     val id: Int,

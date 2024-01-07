@@ -4,7 +4,8 @@ import org.dakralex.pricevista.database.Database
 import org.dakralex.pricevista.database.Entity
 
 /**
- * The [MeasurementUnit] entity describes units something can be measured in.
+ * The [MeasurementUnit] entity describes a measurement unit that is used by
+ * stores to quantify their package and volume sizes.
  */
 data class MeasurementUnit(
     val id: Int? = null,

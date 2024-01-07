@@ -18,8 +18,8 @@ data class Article(
     /** Description of the article **/
     var description: String? = null,
 
-    /** Location where the article was produced at or otherwise originated from **/
-    var origin: Place? = null,
+    /** Country where the article originated from **/
+    var originCountry: Country? = null,
 
     /** Measurement unit of the article **/
     var unit: MeasurementUnit,

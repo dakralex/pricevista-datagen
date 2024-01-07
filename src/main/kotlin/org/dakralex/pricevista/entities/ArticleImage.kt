@@ -9,6 +9,6 @@ data class ArticleImage(
 
     val id: Int? = null,
 
-    /** URL to the image of the article **/
+    /** URL address to some image of the article **/
     val imageUrl: String
 )

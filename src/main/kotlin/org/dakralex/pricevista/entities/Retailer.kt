@@ -8,7 +8,7 @@ import org.dakralex.pricevista.database.Entity
  * functions as a retailer of one or more stores that sell articles.
  */
 data class Retailer(
-    /** Company generalization of the retailer **/
+    /** Company of the retailer **/
     val company: Company,
 
     /** URL address to the main online presence of the retailer **/

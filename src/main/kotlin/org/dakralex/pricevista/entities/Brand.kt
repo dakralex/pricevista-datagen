@@ -5,7 +5,7 @@ package org.dakralex.pricevista.entities
  * functions as a brand that brand articles that are sold in stores.
  */
 data class Brand(
-    /** Company generalization of the brand **/
+    /** Company of the brand **/
     val company: Company,
 
     /** URL address to a logo **/

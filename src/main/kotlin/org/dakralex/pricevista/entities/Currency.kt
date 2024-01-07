@@ -3,6 +3,10 @@ package org.dakralex.pricevista.entities
 import org.dakralex.pricevista.database.Database
 import org.dakralex.pricevista.database.Entity
 
+/**
+ * The [Currency] entity describes a currency that is represented in the
+ * ISO 4217 standard definition.
+ */
 data class Currency(
     /** ISO 4217 three-digit currency code **/
     val id: Int,

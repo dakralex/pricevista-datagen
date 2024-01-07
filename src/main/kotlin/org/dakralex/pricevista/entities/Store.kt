@@ -14,7 +14,7 @@ import org.dakralex.pricevista.database.Entity
 data class Store(
     val id: Int? = null,
 
-    /** Retailer that runs the store **/
+    /** Retailer that owns the store **/
     val retailer: Retailer,
 
     /** Location of the store **/

@@ -3,6 +3,10 @@ package org.dakralex.pricevista.entities
 import org.dakralex.pricevista.database.Database
 import org.dakralex.pricevista.database.Entity
 
+/**
+ * The [Language] entity describes a language that is represented in the
+ * ISO 639-1 standard definition.
+ */
 data class Language(
     /** ISO 639-1 three-digit language code **/
     val id: Int,
