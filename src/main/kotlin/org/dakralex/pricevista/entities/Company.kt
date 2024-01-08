@@ -2,6 +2,7 @@ package org.dakralex.pricevista.entities
 
 import org.dakralex.pricevista.database.Database
 import org.dakralex.pricevista.database.Entity
+import org.dakralex.pricevista.database.EntityComp
 
 /**
  * The [Company] entity is the generalization of the different companies that
@@ -20,10 +21,12 @@ data class Company(
     /** Physical location of the company's headquarters **/
     var place: Place? = null
 ) : Entity {
-    companion object {
-        const val tableName: String = "Company"
-        const val insertStatement: String =
-            """insert into $tableName (id, long_name, short_name, place_id) values (:id, :longName, :shortName, :placeId)"""
+    companion object : EntityComp<Company> {
+        override val tableName: String = "Company"
+        override val insertStatement: String = """
+                insert into $tableName (id, long_name, short_name, place_id)
+                values (:id, :longName, :shortName, :placeId)
+            """.trimIndent()
     }
 
     override fun insert(db: Database) {

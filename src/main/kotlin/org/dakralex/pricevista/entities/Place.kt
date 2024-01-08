@@ -2,6 +2,7 @@ package org.dakralex.pricevista.entities
 
 import org.dakralex.pricevista.database.Database
 import org.dakralex.pricevista.database.Entity
+import org.dakralex.pricevista.database.EntityComp
 
 /**
  * The [Place] entity describes a location in the physical world
@@ -24,10 +25,12 @@ data class Place(
     /** Street address line of the place **/
     var streetAddress: String? = null
 ) : Entity {
-    companion object {
-        const val tableName: String = "Place"
-        const val insertStatement: String =
-            """insert into $tableName (id, country_id, admin_area, locality, postal_code, street_address) values (:id, :countryId, :adminArea, :locality, :postalCode, :streetAddress)"""
+    companion object : EntityComp<Place> {
+        override val tableName: String = "Place"
+        override val insertStatement: String = """
+                insert into $tableName (id, country_id, admin_area, locality, postal_code, street_address)
+                values (:id, :countryId, :adminArea, :locality, :postalCode, :streetAddress)
+            """.trimIndent()
     }
 
     override fun insert(db: Database) {

@@ -2,6 +2,7 @@ package org.dakralex.pricevista.entities
 
 import org.dakralex.pricevista.database.Database
 import org.dakralex.pricevista.database.Entity
+import org.dakralex.pricevista.database.EntityComp
 
 /**
  * The [Brand] entity describes a specialization of a [Company], which
@@ -14,10 +15,12 @@ data class Brand(
     /** URL address to a logo **/
     var logoUrl: String? = null
 ) : Entity {
-    companion object {
-        const val tableName: String = "Brand"
-        const val insertStatement: String =
-            """insert into $tableName (company_id, logo_url) values (:companyId, :logoUrl)"""
+    companion object : EntityComp<Brand> {
+        override val tableName: String = "Brand"
+        override val insertStatement: String = """
+                insert into $tableName (company_id, logo_url)
+                values (:companyId, :logoUrl)
+            """.trimIndent()
     }
 
     override fun insert(db: Database) {

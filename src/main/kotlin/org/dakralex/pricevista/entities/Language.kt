@@ -2,6 +2,7 @@ package org.dakralex.pricevista.entities
 
 import org.dakralex.pricevista.database.Database
 import org.dakralex.pricevista.database.Entity
+import org.dakralex.pricevista.database.EntityComp
 
 /**
  * The [Language] entity describes a language that is represented in the
@@ -20,10 +21,12 @@ data class Language(
     /** English name of the language **/
     val name: String
 ) : Entity {
-    companion object {
-        const val tableName: String = "Language"
-        const val insertStatement: String =
-            """insert into $tableName (id, alpha2, alpha3, name) values (:id, :alpha2, :alpha3, :name)"""
+    companion object : EntityComp<Language> {
+        override val tableName: String = "Language"
+        override val insertStatement: String = """
+                insert into $tableName (id, alpha2, alpha3, name)
+                values (:id, :alpha2, :alpha3, :name)
+            """.trimIndent()
     }
 
     override fun insert(db: Database) {

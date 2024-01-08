@@ -5,14 +5,16 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromStream
 import org.dakralex.pricevista.entities.MeasurementUnit
+import org.dakralex.pricevista.entities.data.EStore
 import org.dakralex.pricevista.entities.dictionary.guessMeasurementUnit
 import org.dakralex.pricevista.parser.JsonParser
 import java.io.InputStream
-import java.math.BigDecimal
 
 private val logger = KotlinLogging.logger {}
 
 object HoferJsonParser : JsonParser<HoferJsonEntry>() {
+    override val store = EStore.HOFER.store
+
     @OptIn(ExperimentalSerializationApi::class)
     override fun decodeJsonFromInputStream(inputStream: InputStream): List<HoferJsonEntry> {
         return inputStream.use { Json.decodeFromStream(it) }

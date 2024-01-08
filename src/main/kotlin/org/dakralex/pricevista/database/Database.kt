@@ -51,10 +51,18 @@ class Database(private val conn: Connection) {
         }
     }
 
-    fun <T> query(sql: String, vararg params: Any, mapper: Mapper<T>): List<T> {
+    fun <T> query(
+        sql: String,
+        vararg params: Any?,
+        mapper: Mapper<T>
+    ): List<T> {
         return conn.prepareStatement(sql).use { statement ->
             params.withIndex().forEach { (index, param) ->
-                statement.setObject(index + 1, param)
+                if (param == null) {
+                    statement.setObject(index + 1, Types.NULL)
+                } else {
+                    statement.setObject(index + 1, param)
+                }
             }
 
             statement.executeQuery().use { set ->
@@ -112,34 +120,34 @@ class Database(private val conn: Connection) {
         action: String,
         entityName: String
     ) {
-        val action = action.lowercase()
+        val actionName = action.lowercase()
 
         val path =
-            "migrations/${migrationTarget}/${action}/${action}_${entityName.lowercase()}.sql"
+            "migrations/${migrationTarget}/${actionName}/${actionName}_${entityName.lowercase()}.sql"
         val script = this::class.java.classLoader
             .getResourceAsStream(path)?.use { stream ->
                 stream.bufferedReader().use(BufferedReader::readText)
             }
 
         if (script == null) {
-            return logger.warn { "Script for entity $entityName not found, skip $action." }
+            return logger.warn { "Script for entity $entityName not found, skip $actionName." }
         }
 
-        when (action) {
+        when (actionName) {
             "create" -> {
                 if (isTableExistent(entityName)) {
-                    return logger.info { "$entityName is already existent, skip $action." }
+                    return logger.info { "$entityName is already existent, skip $actionName." }
                 }
             }
 
             else -> {
                 if (!isTableExistent(entityName)) {
-                    return logger.info { "$entityName is not existent, skip $action." }
+                    return logger.info { "$entityName is not existent, skip $actionName." }
                 }
             }
         }
 
-        val actionVerb = action.replaceFirstChar(Char::uppercase)
+        val actionVerb = actionName.replaceFirstChar(Char::uppercase)
         logger.info { "$actionVerb $entityName table..." }
 
         execute(script)

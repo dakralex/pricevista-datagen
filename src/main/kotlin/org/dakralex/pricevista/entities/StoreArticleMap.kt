@@ -2,6 +2,7 @@ package org.dakralex.pricevista.entities
 
 import org.dakralex.pricevista.database.Database
 import org.dakralex.pricevista.database.Entity
+import org.dakralex.pricevista.database.EntityComp
 import java.util.*
 
 /**
@@ -21,10 +22,12 @@ data class StoreArticleMap(
     /** Timestamp when the article was first discovered **/
     val since: Date
 ) : Entity {
-    companion object {
-        const val tableName: String = "Store_Article_Map"
-        const val insertStatement: String =
-            """insert into $tableName (store_id, store_article_id, article_id, since) values (:storeId, :storeArticleId, :articleId, :since)"""
+    companion object : EntityComp<StoreArticleMap> {
+        override val tableName: String = "Store_Article_Map"
+        override val insertStatement: String = """
+                insert into $tableName (store_id, store_article_id, article_id, since)
+                values (:storeId, :storeArticleId, :articleId, :since)
+            """.trimIndent()
     }
 
     override fun insert(db: Database) {

@@ -12,19 +12,25 @@ import java.io.ByteArrayInputStream
 import java.io.File
 import java.io.InputStream
 import java.math.BigDecimal
+import java.util.*
 
 
 private val logger = KotlinLogging.logger {}
 
 abstract class JsonParser<T : JsonEntry> {
+    abstract val store: Store
+
     private var parsedCompanies: List<Company> = mutableListOf()
     private var parsedBrands: List<Brand> = mutableListOf()
-    private var parsedCategories: List<Category> = mutableListOf()
+    private var parsedCategories: List<Category> =
+        mutableListOf() // TODO Could add categories
     private var parsedArticles: List<Article> = mutableListOf()
-    private var parsedArticleCategories: List<ArticleCategory> = mutableListOf()
+    private var parsedArticleCategories: List<ArticleCategory> =
+        mutableListOf() // TODO Could add categories
     private var parsedArticleImages: List<ArticleImage> = mutableListOf()
     private var parsedStoreArticles: List<StoreArticleMap> = mutableListOf()
-    private var parsedStoreCategories: List<StoreCategoryMap> = mutableListOf()
+    private var parsedStoreCategories: List<StoreCategoryMap> =
+        mutableListOf() // TODO Could add categories
 
 
     abstract fun decodeJsonFromInputStream(inputStream: InputStream): List<T>
@@ -64,24 +70,23 @@ abstract class JsonParser<T : JsonEntry> {
             .replace(brand?.company?.shortName ?: "", "", true).trim()
     }
 
-    private fun parseEntries(inputStream: InputStream) {
+    private fun parseEntries(inputStream: InputStream, date: Date = Date()) {
         // TODO This should be doable with abstraction, but I got an unresolvable
         //      exception I couldn't fix, see kotlinx.serialization#2537
         val entries = decodeJsonFromInputStream(inputStream)
         logger.info { "Parsed ${entries.size} entries." }
 
-        val brands = entries.mapNotNull { parseBrandName(it) }
+        val brands = entries.mapNotNull { entry -> parseBrandName(entry) }
             .distinctBy(String::lowercase)
-        parsedCompanies += brands.map { Company(shortName = it) }
+        parsedCompanies += brands.map { name -> Company(shortName = name) }
 
-        parsedBrands += parsedCompanies.map { Brand(it) }
+        parsedBrands += parsedCompanies.map { company -> Brand(company) }
         logger.info { "Parsed ${parsedBrands.size} unique brands." }
 
         parsedArticles += entries.map { entry ->
-            // TODO Find store's default brand or something similar
             val articleBrand = parseArticleBrand(entry)
 
-            Article(
+            val article = Article(
                 brand = articleBrand,
                 name = parseArticleName(entry, articleBrand),
                 description = parseLongDescription(entry),
@@ -90,21 +95,56 @@ abstract class JsonParser<T : JsonEntry> {
                 quantity = parseQuantity(entry),
                 weightable = parseIsWeightable(entry)
             )
+
+            val parsedImageUrls = parseImageUrls(entry)
+            parsedArticleImages += parsedImageUrls.map { url ->
+                ArticleImage(article, null, url)
+            }
+
+            parsedStoreArticles += StoreArticleMap(
+                store,
+                parseInternalIdentifier(entry),
+                article,
+                date
+            )
+
+            article
+        }.distinctBy { article ->
+            val brandName = article.brand?.company?.shortName
+            val articleName = article.name
+
+            "$brandName$articleName".lowercase()
         }
+        logger.info { "Parsed ${parsedArticles.size} unique articles." }
+
+        parsedArticleImages = parsedArticleImages.distinctBy {
+            it.article.hashCode().toString() + it.imageUrl
+        }
+        logger.info { "Parsed ${parsedArticleImages.size} unique article images." }
+
+        parsedStoreArticles =
+            parsedStoreArticles.distinctBy { it.storeArticleId }
+        logger.info { "Parsed ${parsedStoreArticles.size} unique article mappings." }
     }
 
     fun parseEntries(files: List<File>) {
         logger.info { "Parsing ${files.size} JSON files..." }
 
-        val inputStreams = files.map {
-            when (it.extension) {
-                "json" -> it.inputStream()
-                "br" -> decodeBrotliFile(it)
+        val inputStreamsTimestamped = files.map { file ->
+            val date = Date(file.lastModified())
+
+            val inputStream = when (file.extension) {
+                "json" -> file.inputStream()
+                "br" -> decodeBrotliFile(file)
                 else -> TODO("Not implemented")
             }
+
+            Pair(inputStream, date)
         }
 
-        inputStreams.map { parseEntries(it) }
+        inputStreamsTimestamped.map { inputStream ->
+            parseEntries(inputStream.first, inputStream.second)
+        }
     }
 
     private fun decodeBrotliFile(it: File): ByteArrayInputStream {

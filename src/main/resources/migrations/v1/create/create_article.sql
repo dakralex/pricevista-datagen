@@ -9,8 +9,7 @@ create table Article
     quantity          numeric(18, 4) not null,
     weightable        number(1)      not null,
     constraint pk_Article primary key (id),
-    constraint uc_Article_Name_Brand unique (brand_id, name),
-    constraint uc_Article_Name_Quantity_Unit unique (name, unit_id, quantity),
+    constraint uc_Article_Name_Brand unique (brand_id, name, unit_id, quantity),
     constraint fk_Article_Brand foreign key (brand_id) references Brand (company_id),
     constraint fk_Article_Country_origin foreign key (origin_country_id) references Country (id),
     constraint fk_Article_Measurement_Unit foreign key (unit_id) references Measurement_Unit (id)

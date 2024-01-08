@@ -2,6 +2,7 @@ package org.dakralex.pricevista.entities
 
 import org.dakralex.pricevista.database.Database
 import org.dakralex.pricevista.database.Entity
+import org.dakralex.pricevista.database.EntityComp
 
 /**
  * The [Country] entity describes a country that is represented in the
@@ -20,10 +21,12 @@ data class Country(
     /** English name of the country **/
     val name: String,
 ) : Entity {
-    companion object {
-        const val tableName = "Country"
-        const val insertStatement =
-            """insert into $tableName (id, alpha2, alpha3, name) values (:id, :alpha2, :alpha3, :name)"""
+    companion object : EntityComp<Country> {
+        override val tableName = "Country"
+        override val insertStatement = """
+                insert into $tableName (id, alpha2, alpha3, name)
+                values (:id, :alpha2, :alpha3, :name)
+            """.trimIndent()
     }
 
     override fun insert(db: Database) {
