@@ -27,6 +27,12 @@ data class Language(
                 insert into $tableName (id, alpha2, alpha3, name)
                 values (:id, :alpha2, :alpha3, :name)
             """.trimIndent()
+
+        override fun insertBatch(db: Database, entries: List<Language>) {
+            db.updateBatch(insertStatement, entries.map { entry ->
+                arrayOf(entry.id, entry.alpha2, entry.alpha3, entry.name)
+            })
+        }
     }
 
     override fun insert(db: Database) {

@@ -21,6 +21,12 @@ data class Retailer(
                 insert into $tableName (company_id, website_url)
                 values (:companyId, :websiteUrl)
             """.trimIndent()
+
+        override fun insertBatch(db: Database, entries: List<Retailer>) {
+            db.updateBatch(insertStatement, entries.map { entry ->
+                arrayOf(entry.company.id, entry.websiteUrl)
+            })
+        }
     }
 
     override fun insert(db: Database) {

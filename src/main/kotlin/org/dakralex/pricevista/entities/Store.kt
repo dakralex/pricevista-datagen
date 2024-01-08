@@ -33,6 +33,18 @@ data class Store(
                 insert into $tableName (id, retailer_id, place_id, currency_id, language_id)
                 values (:id, :retailerId, :placeId, :currencyId, :languageId)
             """.trimIndent()
+
+        override fun insertBatch(db: Database, entries: List<Store>) {
+            db.updateBatch(insertStatement, entries.map { entry ->
+                arrayOf(
+                    entry.id,
+                    entry.retailer.company.id,
+                    entry.place.id,
+                    entry.currency.id,
+                    entry.language.id
+                )
+            })
+        }
     }
 
     override fun insert(db: Database) {

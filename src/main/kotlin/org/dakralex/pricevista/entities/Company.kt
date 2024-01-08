@@ -27,6 +27,17 @@ data class Company(
                 insert into $tableName (id, long_name, short_name, place_id)
                 values (:id, :longName, :shortName, :placeId)
             """.trimIndent()
+
+        override fun insertBatch(db: Database, entries: List<Company>) {
+            db.updateBatch(insertStatement, entries.map { entry ->
+                arrayOf(
+                    entry.id,
+                    entry.longName,
+                    entry.shortName,
+                    entry.place?.id
+                )
+            })
+        }
     }
 
     override fun insert(db: Database) {

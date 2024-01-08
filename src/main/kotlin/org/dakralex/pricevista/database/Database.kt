@@ -91,6 +91,24 @@ class Database(private val conn: Connection) {
         }
     }
 
+    fun updateBatch(sql: String, paramsList: List<Array<Any?>>): IntArray {
+        return conn.prepareStatement(sql).use { statement ->
+            paramsList.forEach { params ->
+                params.withIndex().forEach { (index, param) ->
+                    if (param == null) {
+                        statement.setObject(index + 1, Types.NULL)
+                    } else {
+                        statement.setObject(index + 1, param)
+                    }
+                }
+
+                statement.addBatch()
+            }
+
+            statement.executeBatch()
+        }
+    }
+
     private fun isObjectExistent(
         objectName: String,
         type: String

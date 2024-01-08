@@ -26,6 +26,17 @@ data class MeasurementUnit(
                 insert into $tableName (id, label, singular_name, plural_name)
                 values (:id, :label, :singularName, :pluralName)
             """.trimIndent()
+
+        override fun insertBatch(db: Database, entries: List<MeasurementUnit>) {
+            db.updateBatch(insertStatement, entries.map { entry ->
+                arrayOf(
+                    entry.id,
+                    entry.label,
+                    entry.singularName,
+                    entry.pluralName
+                )
+            })
+        }
     }
 
     override fun insert(db: Database) {

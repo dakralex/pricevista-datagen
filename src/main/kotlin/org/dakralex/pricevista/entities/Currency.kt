@@ -33,6 +33,19 @@ data class Currency(
                 insert into $tableName (id, alpha3, scale, symbol, minor, name)
                 values (:id, :alpha3, :scale, :symbol, :minor, :name)
             """.trimIndent()
+
+        override fun insertBatch(db: Database, entries: List<Currency>) {
+            db.updateBatch(insertStatement, entries.map { entry ->
+                arrayOf(
+                    entry.id,
+                    entry.alpha3,
+                    entry.scale,
+                    entry.symbol,
+                    entry.minor,
+                    entry.name
+                )
+            })
+        }
     }
 
     override fun insert(db: Database) {
