@@ -24,11 +24,11 @@ data class Place(
     /** Street address line of the place **/
     var streetAddress: String? = null
 ) : Entity {
-    override val tableName = "Place"
-    override val insertStatement = """
-        insert into $tableName (id, country_id, admin_area, locality, postal_code, street_address)
-        values (:id, :countryId, :adminArea, :locality, :postalCode, :streetAddress)
-    """.trimIndent()
+    companion object {
+        const val tableName: String = "Place"
+        const val insertStatement: String =
+            """insert into $tableName (id, country_id, admin_area, locality, postal_code, street_address) values (:id, :countryId, :adminArea, :locality, :postalCode, :streetAddress)"""
+    }
 
     override fun insert(db: Database) {
         db.update(

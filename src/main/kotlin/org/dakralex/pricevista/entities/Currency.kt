@@ -26,11 +26,11 @@ data class Currency(
     /** English name of the currency **/
     val name: String
 ) : Entity {
-    override val tableName = "Currency"
-    override val insertStatement = """
-        insert into $tableName (id, alpha3, scale, symbol, minor, name)
-        values (:id, :alpha3, :scale, :symbol, :minor, :name)
-    """.trimIndent()
+    companion object {
+        const val tableName: String = "Currency"
+        const val insertStatement: String =
+            """insert into $tableName (id, alpha3, scale, symbol, minor, name) values (:id, :alpha3, :scale, :symbol, :minor, :name)"""
+    }
 
     override fun insert(db: Database) {
         db.update(insertStatement, id, alpha3, scale, symbol, minor, name)

@@ -1,5 +1,7 @@
 package org.dakralex.pricevista.entities
 
+import org.dakralex.pricevista.database.Database
+import org.dakralex.pricevista.database.Entity
 import java.math.BigDecimal
 
 /**
@@ -29,4 +31,24 @@ data class Article(
 
     /** Whether the article can be bought in bulk by weighing it */
     var weightable: Boolean
-)
+) : Entity {
+    companion object {
+        const val tableName: String = "Article"
+        const val insertStatement: String =
+            """insert into $tableName (id, brand_id, name, description, origin_country_id, unit_id, quantity, weightable) values (:id, :brandId, :name, :description, :originCountryId, :unitId, :quantity, :weightable)"""
+    }
+
+    override fun insert(db: Database) {
+        db.update(
+            insertStatement,
+            id,
+            brand?.company?.id,
+            name,
+            description,
+            originCountry?.id,
+            unit.id,
+            quantity,
+            weightable
+        )
+    }
+}

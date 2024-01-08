@@ -14,11 +14,11 @@ data class Retailer(
     /** URL address to the main online presence of the retailer **/
     val websiteUrl: String? = null
 ) : Entity {
-    override val tableName = "Retailer"
-    override val insertStatement = """
-        insert into $tableName (company_id, website_url)
-        values (:companyId, :websiteUrl)
-    """.trimIndent()
+    companion object {
+        const val tableName: String = "Retailer"
+        const val insertStatement: String =
+            """insert into $tableName (company_id, website_url) values (:companyId, :websiteUrl)"""
+    }
 
     override fun insert(db: Database) {
         db.update(insertStatement, company.id, websiteUrl)

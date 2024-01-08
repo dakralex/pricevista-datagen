@@ -20,11 +20,11 @@ data class Company(
     /** Physical location of the company's headquarters **/
     var place: Place? = null
 ) : Entity {
-    override val tableName = "Company"
-    override val insertStatement = """
-        insert into $tableName (id, long_name, short_name, place_id)
-        values (:id, :longName, :shortName, :placeId)
-    """.trimIndent()
+    companion object {
+        const val tableName: String = "Company"
+        const val insertStatement: String =
+            """insert into $tableName (id, long_name, short_name, place_id) values (:id, :longName, :shortName, :placeId)"""
+    }
 
     override fun insert(db: Database) {
         db.update(insertStatement, id, longName, shortName, place?.id)

@@ -19,11 +19,11 @@ data class MeasurementUnit(
     /** English name of the measurement unit in plural **/
     val pluralName: String = singularName + "s",
 ) : Entity {
-    override val tableName = "Measurement_Unit"
-    override val insertStatement = """
-        insert into $tableName (id, label, singular_name, plural_name)
-        values (:id, :label, :singularName, :pluralName)
-    """.trimIndent()
+    companion object {
+        const val tableName: String = "Measurement_Unit"
+        const val insertStatement: String =
+            """insert into $tableName (id, label, singular_name, plural_name) values (:id, :label, :singularName, :pluralName)"""
+    }
 
     override fun insert(db: Database) {
         db.update(insertStatement, id, label, singularName, pluralName)

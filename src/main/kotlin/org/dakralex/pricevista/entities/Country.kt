@@ -20,11 +20,11 @@ data class Country(
     /** English name of the country **/
     val name: String,
 ) : Entity {
-    override val tableName = "Country"
-    override val insertStatement = """
-        insert into $tableName (id, alpha2, alpha3, name)
-        values (:id, :alpha2, :alpha3, :name)
-    """.trimIndent()
+    companion object {
+        const val tableName = "Country"
+        const val insertStatement =
+            """insert into $tableName (id, alpha2, alpha3, name) values (:id, :alpha2, :alpha3, :name)"""
+    }
 
     override fun insert(db: Database) {
         db.update(insertStatement, id, alpha2, alpha3, name)

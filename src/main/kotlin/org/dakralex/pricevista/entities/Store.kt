@@ -26,11 +26,11 @@ data class Store(
     /** Language of the store **/
     var language: Language
 ) : Entity {
-    override val tableName = "Store"
-    override val insertStatement = """
-        insert into $tableName (id, retailer_id, place_id, currency_id, language_id)
-        values (:id, :retailerId, :placeId, :currencyId, :languageId)
-    """.trimIndent()
+    companion object {
+        const val tableName: String = "Store"
+        const val insertStatement: String =
+            """insert into $tableName (id, retailer_id, place_id, currency_id, language_id) values (:id, :retailerId, :placeId, :currencyId, :languageId)"""
+    }
 
     override fun insert(db: Database) {
         db.update(
