@@ -1,1 +1,1 @@
-drop table Current_Price;
+drop table Current_Price

@@ -1,1 +1,1 @@
-drop table Company;
+drop table Company

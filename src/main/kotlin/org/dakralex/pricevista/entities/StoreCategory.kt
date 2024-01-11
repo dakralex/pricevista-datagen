@@ -5,10 +5,10 @@ import org.dakralex.pricevista.database.Entity
 import org.dakralex.pricevista.database.EntityComp
 
 /**
- * The [StoreCategoryMap] relation describes the mapping between the store's
+ * The [StoreCategory] relation describes the mapping between the store's
  * internal category identifiers to the categories.
  */
-data class StoreCategoryMap(
+data class StoreCategory(
     /** Store that has the category **/
     val store: Store,
 
@@ -18,8 +18,8 @@ data class StoreCategoryMap(
     /** Category that the store's internal category identifier references **/
     var category: Category
 ) : Entity {
-    companion object : EntityComp<StoreCategoryMap> {
-        override val tableName: String = "Store_Category_Map"
+    companion object : EntityComp<StoreCategory> {
+        override val tableName: String = "Store_Category"
         override val insertStatement: String = """
                 insert into $tableName (store_id, store_category_id, category_id)
                 values (:storeId, :storeCategoryId, :categoryId)

@@ -1,1 +1,1 @@
-drop table Measurement_Unit;
+drop table Measurement_Unit

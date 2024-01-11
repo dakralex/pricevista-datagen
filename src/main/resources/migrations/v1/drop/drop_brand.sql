@@ -1,1 +1,1 @@
-drop table Brand;
+drop table Brand

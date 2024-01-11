@@ -6,6 +6,7 @@ import com.aayushatharva.brotli4j.decoder.DecoderJNI
 import com.aayushatharva.brotli4j.decoder.DirectDecompress
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.dakralex.pricevista.QUANTITY_MATH_CONTEXT
+import org.dakralex.pricevista.database.Database
 import org.dakralex.pricevista.entities.*
 import org.dakralex.pricevista.entities.data.EMeasurementUnit
 import java.io.ByteArrayInputStream
@@ -20,6 +21,8 @@ private val logger = KotlinLogging.logger {}
 abstract class JsonParser<T : JsonEntry> {
     abstract val store: Store
 
+    open val storeDefaultBrand: Brand? = null
+
     private var parsedCompanies: List<Company> = mutableListOf()
     private var parsedBrands: List<Brand> = mutableListOf()
     private var parsedCategories: List<Category> =
@@ -28,8 +31,8 @@ abstract class JsonParser<T : JsonEntry> {
     private var parsedArticleCategories: List<ArticleCategory> =
         mutableListOf() // TODO Could add categories
     private var parsedArticleImages: List<ArticleImage> = mutableListOf()
-    private var parsedStoreArticles: List<StoreArticleMap> = mutableListOf()
-    private var parsedStoreCategories: List<StoreCategoryMap> =
+    private var parsedStoreArticles: List<StoreArticle> = mutableListOf()
+    private var parsedStoreCategories: List<StoreCategory> =
         mutableListOf() // TODO Could add categories
 
 
@@ -84,7 +87,7 @@ abstract class JsonParser<T : JsonEntry> {
         logger.info { "Parsed ${parsedBrands.size} unique brands." }
 
         parsedArticles += entries.map { entry ->
-            val articleBrand = parseArticleBrand(entry)
+            val articleBrand = parseArticleBrand(entry) ?: storeDefaultBrand
 
             val article = Article(
                 brand = articleBrand,
@@ -101,7 +104,7 @@ abstract class JsonParser<T : JsonEntry> {
                 ArticleImage(article, null, url)
             }
 
-            parsedStoreArticles += StoreArticleMap(
+            parsedStoreArticles += StoreArticle(
                 store,
                 parseInternalIdentifier(entry),
                 article,
@@ -124,7 +127,7 @@ abstract class JsonParser<T : JsonEntry> {
 
         parsedStoreArticles =
             parsedStoreArticles.distinctBy { it.storeArticleId }
-        logger.info { "Parsed ${parsedStoreArticles.size} unique article mappings." }
+        logger.info { "Parsed ${parsedStoreArticles.size} unique store articles." }
     }
 
     fun parseEntries(files: List<File>) {
@@ -145,6 +148,30 @@ abstract class JsonParser<T : JsonEntry> {
         inputStreamsTimestamped.map { inputStream ->
             parseEntries(inputStream.first, inputStream.second)
         }
+    }
+
+    fun commit(db: Database) {
+        logger.info { " " }
+        logger.info { " " }
+        logger.info { " " }
+        logger.info { " " }
+        logger.info { " " }
+
+        logger.info { "Commit parsed companies..." }
+        logger.debug { parsedCompanies }
+        Company.insertBatch(db, parsedCompanies)
+
+        logger.info { "Commit parsed brands..." }
+        Brand.insertBatch(db, parsedBrands)
+
+        logger.info { "Commit parsed articles..." }
+        Article.insertBatch(db, parsedArticles)
+
+        logger.info { "Commit parsed article images..." }
+        ArticleImage.insertBatch(db, parsedArticleImages)
+
+        logger.info { "Commit parsed store articles..." }
+        StoreArticle.insertBatch(db, parsedStoreArticles)
     }
 
     private fun decodeBrotliFile(it: File): ByteArrayInputStream {

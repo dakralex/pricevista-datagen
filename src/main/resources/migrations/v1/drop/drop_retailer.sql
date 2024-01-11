@@ -1,1 +1,1 @@
-drop table Retailer;
+drop table Retailer

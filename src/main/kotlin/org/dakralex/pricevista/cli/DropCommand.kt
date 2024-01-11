@@ -30,8 +30,8 @@ class DropCommand(name: String = "drop") :
 
         dropTable(db, "Recorded_Price")
         dropTable(db, "Current_Price")
-        dropTable(db, "Store_Category_Map")
-        dropTable(db, "Store_Article_Map")
+        dropTable(db, "Store_Category")
+        dropTable(db, "Store_Article")
         dropTable(db, "Store")
         dropTable(db, "Article_Image")
         dropTable(db, "Article_Category")

@@ -1,1 +1,1 @@
-drop table Article_Category;
+drop table Article_Category

@@ -6,10 +6,10 @@ import org.dakralex.pricevista.database.EntityComp
 import java.util.*
 
 /**
- * The [StoreArticleMap] relation describes the mapping between the store's
+ * The [StoreArticle] relation describes the mapping between the store's
  * internal article identifiers to the articles.
  */
-data class StoreArticleMap(
+data class StoreArticle(
     /** Store that holds the article **/
     val store: Store,
 
@@ -22,8 +22,8 @@ data class StoreArticleMap(
     /** Timestamp when the article was first discovered **/
     val since: Date
 ) : Entity {
-    companion object : EntityComp<StoreArticleMap> {
-        override val tableName: String = "Store_Article_Map"
+    companion object : EntityComp<StoreArticle> {
+        override val tableName: String = "Store_Article"
         override val insertStatement: String = """
                 insert into $tableName (store_id, store_article_id, article_id, since)
                 values (:storeId, :storeArticleId, :articleId, :since)

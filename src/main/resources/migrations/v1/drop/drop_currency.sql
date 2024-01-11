@@ -1,1 +1,1 @@
-drop table Currency;
+drop table Currency

@@ -1,1 +1,1 @@
-drop table Company_Participation;
+drop table Company_Participation

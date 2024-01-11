@@ -1,1 +1,1 @@
-drop table Language;
+drop table Language

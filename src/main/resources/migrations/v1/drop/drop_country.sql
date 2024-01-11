@@ -1,1 +1,1 @@
-drop table Country;
+drop table Country

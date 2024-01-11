@@ -1,1 +1,1 @@
-drop table Store;
+drop table Store

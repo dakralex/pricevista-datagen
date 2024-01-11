@@ -1,1 +1,1 @@
-drop table Recorded_Price;
+drop table Recorded_Price

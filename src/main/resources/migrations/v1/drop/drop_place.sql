@@ -1,1 +1,1 @@
-drop table Place;
+drop table Place

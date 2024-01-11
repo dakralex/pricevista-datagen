@@ -1,1 +1,0 @@
-drop table Store_Category_Map;

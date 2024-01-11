@@ -88,11 +88,11 @@ class InitCommand(name: String = "init") :
         logger.info { "Inserting preliminary store data..." }
         Store.insertBatch(db, EStore.entries.map(EStore::store))
 
-        createTable(db, "Store_Article_Map")
-        createTable(db, "Store_Category_Map")
+        createTable(db, "Store_Article")
+        createTable(db, "Store_Category")
         createTable(db, "Current_Price")
         createTable(db, "Recorded_Price")
 
-        logger.info { "PriceVista database initialized successfully." }
+        logger.info { "PriceVista database $migrationTarget initialized successfully." }
     }
 }

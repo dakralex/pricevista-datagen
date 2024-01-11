@@ -1,1 +1,1 @@
-drop table Article_Image;
+drop table Article_Image

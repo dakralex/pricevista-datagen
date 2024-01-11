@@ -17,9 +17,9 @@ private val logger = KotlinLogging.logger {}
 object SparJsonParser : JsonParser<SparJsonEntry>() {
     override val store = EStore.SPAR.store
 
-    private val decimalSepRegex = Regex("""\,""")
+    private val decimalSepRegex = Regex(""",""")
     private val unitRegex = Regex("""[\sa-z]+""")
-    private val quantityRegex = Regex("""[\,\.\d]""")
+    private val quantityRegex = Regex("""[,.\d]""")
     private val depositTypeRegex = Regex("""(einweg|mehrweg)""")
 
     @OptIn(ExperimentalSerializationApi::class)
