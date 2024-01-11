@@ -1,5 +1,7 @@
 package org.dakralex.pricevista.database
 
+import org.dakralex.pricevista.contracts.database.Database
+
 interface EntityComp<T : Entity> {
     val tableName: String
     val insertStatement: String

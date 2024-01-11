@@ -2,12 +2,14 @@ package org.dakralex.pricevista.database
 
 import io.github.oshai.kotlinlogging.KotlinLogging
 import oracle.jdbc.driver.OracleDriver
+import org.dakralex.pricevista.contracts.database.Database
+import org.dakralex.pricevista.contracts.database.Mapper
 import java.io.BufferedReader
 import java.sql.*
 
 private val logger = KotlinLogging.logger {}
 
-class Database(private val conn: Connection) {
+class OracleDatabase(private val conn: Connection) : Database {
     companion object {
         init {
             DriverManager.registerDriver(OracleDriver())
@@ -20,7 +22,7 @@ class Database(private val conn: Connection) {
             name: String?,
             user: String,
             password: String
-        ): Database {
+        ): OracleDatabase {
             val url = "jdbc:oracle:thin:@$host:$port:$name"
 
             try {
@@ -32,7 +34,7 @@ class Database(private val conn: Connection) {
 
                 logger.info { "Connected to the database $url successfully." }
 
-                return Database(conn)
+                return OracleDatabase(conn)
             } catch (e: SQLException) {
                 logger.error { "Could not connect to the database $url: $e" }
 
@@ -41,7 +43,7 @@ class Database(private val conn: Connection) {
         }
     }
 
-    fun execute(sql: String, vararg params: Any): Boolean {
+    override fun execute(sql: String, vararg params: Any): Boolean {
         return conn.prepareStatement(sql).use { statement ->
             params.withIndex().forEach { (index, param) ->
                 statement.setObject(index + 1, param)
@@ -51,7 +53,51 @@ class Database(private val conn: Connection) {
         }
     }
 
-    fun <T> query(
+    override fun executeMigration(
+        action: String,
+        entityName: String,
+        target: String
+    ): Boolean {
+        val actionName = action.lowercase()
+
+        val path =
+            "migrations/${target}/${actionName}/${actionName}_${entityName.lowercase()}.sql"
+        val script = this::class.java.classLoader
+            .getResourceAsStream(path)?.use { stream ->
+                stream.bufferedReader().use(BufferedReader::readText)
+            }
+
+        if (script == null) {
+            logger.warn { "Script for entity $entityName not found, skip $actionName." }
+
+            return false
+        }
+
+        when (actionName) {
+            "create" -> {
+                if (isTableExistent(entityName)) {
+                    logger.info { "$entityName is already existent, skip $actionName." }
+
+                    return false
+                }
+            }
+
+            else -> {
+                if (!isTableExistent(entityName)) {
+                    logger.info { "$entityName is not existent, skip $actionName." }
+
+                    return false
+                }
+            }
+        }
+
+        val actionVerb = actionName.replaceFirstChar(Char::uppercase)
+        logger.info { "$actionVerb $entityName table..." }
+
+        return execute(script)
+    }
+
+    override fun <T> query(
         sql: String,
         vararg params: Any?,
         mapper: Mapper<T>
@@ -77,7 +123,7 @@ class Database(private val conn: Connection) {
         }
     }
 
-    fun update(sql: String, vararg params: Any?): Int {
+    override fun update(sql: String, vararg params: Any?): Int {
         return conn.prepareStatement(sql).use { statement ->
             params.withIndex().forEach { (index, param) ->
                 if (param == null) {
@@ -91,7 +137,10 @@ class Database(private val conn: Connection) {
         }
     }
 
-    fun updateBatch(sql: String, paramsList: List<Array<Any?>>): IntArray {
+    override fun updateBatch(
+        sql: String,
+        paramsList: List<Array<Any?>>
+    ): IntArray {
         return conn.prepareStatement(sql).use { statement ->
             paramsList.forEach { params ->
                 params.withIndex().forEach { (index, param) ->
@@ -127,49 +176,7 @@ class Database(private val conn: Connection) {
         return res.first()
     }
 
-    fun isTableExistent(tableName: String) =
+    private fun isTableExistent(tableName: String) =
         isObjectExistent(tableName, "table")
-
-    fun isViewExistent(viewName: String) =
-        isObjectExistent(viewName, "view")
-
-    fun executeMigrationScript(
-        migrationTarget: String,
-        action: String,
-        entityName: String
-    ) {
-        val actionName = action.lowercase()
-
-        val path =
-            "migrations/${migrationTarget}/${actionName}/${actionName}_${entityName.lowercase()}.sql"
-        val script = this::class.java.classLoader
-            .getResourceAsStream(path)?.use { stream ->
-                stream.bufferedReader().use(BufferedReader::readText)
-            }
-
-        if (script == null) {
-            return logger.warn { "Script for entity $entityName not found, skip $actionName." }
-        }
-
-        when (actionName) {
-            "create" -> {
-                if (isTableExistent(entityName)) {
-                    return logger.info { "$entityName is already existent, skip $actionName." }
-                }
-            }
-
-            else -> {
-                if (!isTableExistent(entityName)) {
-                    return logger.info { "$entityName is not existent, skip $actionName." }
-                }
-            }
-        }
-
-        val actionVerb = actionName.replaceFirstChar(Char::uppercase)
-        logger.info { "$actionVerb $entityName table..." }
-
-        execute(script)
-    }
 }
 
-typealias Mapper<T> = (ResultSet) -> T

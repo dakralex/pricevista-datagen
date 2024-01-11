@@ -5,7 +5,8 @@ import com.github.ajalt.clikt.parameters.groups.provideDelegate
 import com.github.ajalt.clikt.parameters.options.default
 import com.github.ajalt.clikt.parameters.options.help
 import com.github.ajalt.clikt.parameters.options.option
-import org.dakralex.pricevista.database.Database
+import org.dakralex.pricevista.contracts.database.Database
+import org.dakralex.pricevista.database.OracleDatabase
 
 class DropCommand(name: String = "drop") :
     CliktCommand(name = name, help = "Drop the database") {
@@ -16,11 +17,11 @@ class DropCommand(name: String = "drop") :
         .default("v1")
 
     private fun dropTable(db: Database, tableName: String) {
-        db.executeMigrationScript(migrationTarget, "drop", tableName)
+        db.executeMigration("drop", tableName, migrationTarget)
     }
 
     override fun run() {
-        val db = Database.connect(
+        val db = OracleDatabase.connect(
             dbOpts.dbHost,
             dbOpts.dbPort,
             dbOpts.dbName,

@@ -8,7 +8,7 @@ import com.github.ajalt.clikt.parameters.groups.provideDelegate
 import com.github.ajalt.clikt.parameters.types.enum
 import com.github.ajalt.clikt.parameters.types.file
 import io.github.oshai.kotlinlogging.KotlinLogging
-import org.dakralex.pricevista.database.Database
+import org.dakralex.pricevista.database.OracleDatabase
 import org.dakralex.pricevista.entities.data.EStore
 import org.dakralex.pricevista.parser.billa.BillaJsonParser
 import org.dakralex.pricevista.parser.hofer.HoferJsonParser
@@ -35,7 +35,7 @@ class UpdateCommand(name: String = "update") :
         .multiple(default = listOf(File("data/billa-2023-12-18.json")))
 
     override fun run() {
-        val db = Database.connect(
+        val db = OracleDatabase.connect(
             dbOpts.dbHost,
             dbOpts.dbPort,
             dbOpts.dbName,

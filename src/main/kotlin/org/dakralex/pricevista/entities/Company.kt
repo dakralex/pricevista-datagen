@@ -1,6 +1,6 @@
 package org.dakralex.pricevista.entities
 
-import org.dakralex.pricevista.database.Database
+import org.dakralex.pricevista.contracts.database.Database
 import org.dakralex.pricevista.database.ResolvableEntity
 import org.dakralex.pricevista.database.ResolvableEntityComp
 

@@ -6,7 +6,7 @@ import com.aayushatharva.brotli4j.decoder.DecoderJNI
 import com.aayushatharva.brotli4j.decoder.DirectDecompress
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.dakralex.pricevista.QUANTITY_MATH_CONTEXT
-import org.dakralex.pricevista.database.Database
+import org.dakralex.pricevista.contracts.database.Database
 import org.dakralex.pricevista.entities.*
 import org.dakralex.pricevista.entities.data.EArticleUnit
 import java.io.ByteArrayInputStream

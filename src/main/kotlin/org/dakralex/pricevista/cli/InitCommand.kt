@@ -8,7 +8,7 @@ import com.github.ajalt.clikt.parameters.options.option
 import com.github.ajalt.clikt.parameters.options.split
 import com.github.ajalt.clikt.parameters.types.enum
 import io.github.oshai.kotlinlogging.KotlinLogging
-import org.dakralex.pricevista.database.Database
+import org.dakralex.pricevista.database.OracleDatabase
 import org.dakralex.pricevista.entities.*
 import org.dakralex.pricevista.entities.data.*
 
@@ -32,12 +32,12 @@ class InitCommand(name: String = "init") :
         .split(",")
         .default(EStore.entries)
 
-    private fun createTable(db: Database, tableName: String) {
-        db.executeMigrationScript(migrationTarget, "create", tableName)
+    private fun createTable(db: OracleDatabase, tableName: String) {
+        db.executeMigration("create", tableName, migrationTarget)
     }
 
     override fun run() {
-        val db = Database.connect(
+        val db = OracleDatabase.connect(
             dbOpts.dbHost,
             dbOpts.dbPort,
             dbOpts.dbName,
