@@ -42,7 +42,7 @@ class DropCommand(name: String = "drop") :
         dropTable(db, "Company_Participation")
         dropTable(db, "Company")
         dropTable(db, "Place")
-        dropTable(db, "Measurement_Unit")
+        dropTable(db, "Article_Unit")
         dropTable(db, "Language")
         dropTable(db, "Currency")
         dropTable(db, "Country")

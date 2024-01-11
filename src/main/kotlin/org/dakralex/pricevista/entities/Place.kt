@@ -4,11 +4,13 @@ import org.dakralex.pricevista.database.Database
 import org.dakralex.pricevista.database.Entity
 import org.dakralex.pricevista.database.EntityComp
 
+typealias PlaceId = Int
+
 /**
  * The [Place] entity describes a location in the physical world
  */
 data class Place(
-    val id: Int? = null,
+    val id: PlaceId? = null,
 
     /** Country of the place **/
     var country: Country,

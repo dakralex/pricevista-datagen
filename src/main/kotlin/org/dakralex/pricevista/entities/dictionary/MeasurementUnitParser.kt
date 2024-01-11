@@ -1,54 +1,54 @@
 package org.dakralex.pricevista.entities.dictionary
 
-import org.dakralex.pricevista.entities.MeasurementUnit
-import org.dakralex.pricevista.entities.data.EMeasurementUnit
+import org.dakralex.pricevista.entities.ArticleUnit
+import org.dakralex.pricevista.entities.data.EArticleUnit
 
-fun guessMeasurementUnit(
+fun guessArticleUnit(
     longName: String? = null,
     shortName: String? = null
-): MeasurementUnit? {
+): ArticleUnit? {
     val longNameLowercased = longName?.lowercase()
     val shortNameLowercased = shortName?.lowercase()
 
     val longNameCandidate = when (longNameLowercased) {
-        "gram", "gramm" -> EMeasurementUnit.METRIC_GRAM
-        "kg", "kilo", "kilogram", "kilogramm" -> EMeasurementUnit.METRIC_KILOGRAM
-        "metre", "meter" -> EMeasurementUnit.METRIC_METRE
-        "centimetre", "centimeter", "zentimeter" -> EMeasurementUnit.METRIC_CENTIMETRE
-        "litre", "liter" -> EMeasurementUnit.METRIC_LITRE
-        "millilitre", "milliliter" -> EMeasurementUnit.METRIC_MILLILITRE
-        "beutel", "taschenpackung" -> EMeasurementUnit.MISC_BAG
-        "riegel" -> EMeasurementUnit.MISC_BAR
-        "korb" -> EMeasurementUnit.MISC_BASKET
-        "blister" -> EMeasurementUnit.MISC_BLISTER
-        "flasche" -> EMeasurementUnit.MISC_BOTTLE
-        "box", "geschenkkarton", "schachtel" -> EMeasurementUnit.MISC_BOX
-        "kübel", "eimer" -> EMeasurementUnit.MISC_BUCKET
-        "bund", "bündel" -> EMeasurementUnit.MISC_BUNCH
-        "dose" -> EMeasurementUnit.MISC_CAN
-        "kanister" -> EMeasurementUnit.MISC_CANISTER
-        "karton" -> EMeasurementUnit.MISC_CARTON
-        "kiste" -> EMeasurementUnit.MISC_CRATE
-        "tafel" -> EMeasurementUnit.MISC_CHOCOLATE_BAR
-        "becher" -> EMeasurementUnit.MISC_CUP
-        "glas", "glass" -> EMeasurementUnit.MISC_GLASS
-        "tiegel", "konservenglas" -> EMeasurementUnit.MISC_JAR
-        "brief" -> EMeasurementUnit.MISC_LETTER
-        "netz", "net" -> EMeasurementUnit.MISC_NET
-        "packung", "paket" -> EMeasurementUnit.MISC_NET
-        "paar" -> EMeasurementUnit.MISC_PAIR
-        "stück", "stk" -> EMeasurementUnit.MISC_PIECE
-        "portion" -> EMeasurementUnit.MISC_PORTION
-        "roll", "rolle", "rollen" -> EMeasurementUnit.MISC_ROLL
-        "sack" -> EMeasurementUnit.MISC_SACK
-        "blatt" -> EMeasurementUnit.MISC_SHEET
-        "scheibe", "scheibe(slk)" -> EMeasurementUnit.MISC_SLICE
-        "teebeutel" -> EMeasurementUnit.MISC_TEA_BAG
-        "blechdose", "blechdose (ita)" -> EMeasurementUnit.MISC_TIN_CAN
-        "spray" -> EMeasurementUnit.MISC_SPRAY
-        "tasse", "schale" -> EMeasurementUnit.MISC_TRAY
-        "tube" -> EMeasurementUnit.MISC_TUBE
-        "waschgang" -> EMeasurementUnit.MISC_WASH_LOAD
+        "gram", "gramm" -> EArticleUnit.METRIC_GRAM
+        "kg", "kilo", "kilogram", "kilogramm" -> EArticleUnit.METRIC_KILOGRAM
+        "metre", "meter" -> EArticleUnit.METRIC_METRE
+        "centimetre", "centimeter", "zentimeter" -> EArticleUnit.METRIC_CENTIMETRE
+        "litre", "liter" -> EArticleUnit.METRIC_LITRE
+        "millilitre", "milliliter" -> EArticleUnit.METRIC_MILLILITRE
+        "beutel", "taschenpackung" -> EArticleUnit.MISC_BAG
+        "riegel" -> EArticleUnit.MISC_BAR
+        "korb" -> EArticleUnit.MISC_BASKET
+        "blister" -> EArticleUnit.MISC_BLISTER
+        "flasche" -> EArticleUnit.MISC_BOTTLE
+        "box", "geschenkkarton", "schachtel" -> EArticleUnit.MISC_BOX
+        "kübel", "eimer" -> EArticleUnit.MISC_BUCKET
+        "bund", "bündel" -> EArticleUnit.MISC_BUNCH
+        "dose" -> EArticleUnit.MISC_CAN
+        "kanister" -> EArticleUnit.MISC_CANISTER
+        "karton" -> EArticleUnit.MISC_CARTON
+        "kiste" -> EArticleUnit.MISC_CRATE
+        "tafel" -> EArticleUnit.MISC_CHOCOLATE_BAR
+        "becher" -> EArticleUnit.MISC_CUP
+        "glas", "glass" -> EArticleUnit.MISC_GLASS
+        "tiegel", "konservenglas" -> EArticleUnit.MISC_JAR
+        "brief" -> EArticleUnit.MISC_LETTER
+        "netz", "net" -> EArticleUnit.MISC_NET
+        "packung", "paket" -> EArticleUnit.MISC_NET
+        "paar" -> EArticleUnit.MISC_PAIR
+        "stück", "stk" -> EArticleUnit.MISC_PIECE
+        "portion" -> EArticleUnit.MISC_PORTION
+        "roll", "rolle", "rollen" -> EArticleUnit.MISC_ROLL
+        "sack" -> EArticleUnit.MISC_SACK
+        "blatt" -> EArticleUnit.MISC_SHEET
+        "scheibe", "scheibe(slk)" -> EArticleUnit.MISC_SLICE
+        "teebeutel" -> EArticleUnit.MISC_TEA_BAG
+        "blechdose", "blechdose (ita)" -> EArticleUnit.MISC_TIN_CAN
+        "spray" -> EArticleUnit.MISC_SPRAY
+        "tasse", "schale" -> EArticleUnit.MISC_TRAY
+        "tube" -> EArticleUnit.MISC_TUBE
+        "waschgang" -> EArticleUnit.MISC_WASH_LOAD
         else -> null
     }
 
@@ -57,13 +57,13 @@ fun guessMeasurementUnit(
     }
 
     val shortNameCandidate = when (shortNameLowercased) {
-        "g", "gr" -> EMeasurementUnit.METRIC_GRAM
-        "kg" -> EMeasurementUnit.METRIC_KILOGRAM
-        "m" -> EMeasurementUnit.METRIC_METRE
-        "cm" -> EMeasurementUnit.METRIC_CENTIMETRE
-        "l", "lt", "liter" -> EMeasurementUnit.METRIC_LITRE
-        "ml" -> EMeasurementUnit.METRIC_MILLILITRE
-        "st", "stk" -> EMeasurementUnit.MISC_PIECE
+        "g", "gr" -> EArticleUnit.METRIC_GRAM
+        "kg" -> EArticleUnit.METRIC_KILOGRAM
+        "m" -> EArticleUnit.METRIC_METRE
+        "cm" -> EArticleUnit.METRIC_CENTIMETRE
+        "l", "lt", "liter" -> EArticleUnit.METRIC_LITRE
+        "ml" -> EArticleUnit.METRIC_MILLILITRE
+        "st", "stk" -> EArticleUnit.MISC_PIECE
         else -> null
     }
 

@@ -4,13 +4,15 @@ import org.dakralex.pricevista.database.Database
 import org.dakralex.pricevista.database.Entity
 import org.dakralex.pricevista.database.EntityComp
 
+typealias CurrencyId = Int
+
 /**
  * The [Currency] entity describes a currency that is represented in the
  * ISO 4217 standard definition.
  */
 data class Currency(
     /** ISO 4217 three-digit currency code **/
-    val id: Int,
+    val id: CurrencyId,
 
     /** ISO 4217 three-letter currency code **/
     val alpha3: String,

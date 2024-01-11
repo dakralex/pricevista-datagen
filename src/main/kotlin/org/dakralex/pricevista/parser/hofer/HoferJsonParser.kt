@@ -4,9 +4,9 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromStream
-import org.dakralex.pricevista.entities.MeasurementUnit
+import org.dakralex.pricevista.entities.ArticleUnit
 import org.dakralex.pricevista.entities.data.EStore
-import org.dakralex.pricevista.entities.dictionary.guessMeasurementUnit
+import org.dakralex.pricevista.entities.dictionary.guessArticleUnit
 import org.dakralex.pricevista.parser.JsonParser
 import java.io.InputStream
 
@@ -43,11 +43,11 @@ object HoferJsonParser : JsonParser<HoferJsonEntry>() {
         return entry.description
     }
 
-    override fun parseMeasurementUnit(entry: HoferJsonEntry): MeasurementUnit {
+    override fun parseArticleUnit(entry: HoferJsonEntry): ArticleUnit {
         // TODO Uhm... I think we shouldn't collect the display unit but the
         //      priceUnitType here so we know in what unit the item is weighted
-        return guessMeasurementUnit(entry.displayUnit)
-            ?: super.parseMeasurementUnit(entry)
+        return guessArticleUnit(entry.displayUnit)
+            ?: super.parseArticleUnit(entry)
     }
 
     override fun parseIsWeightable(entry: HoferJsonEntry): Boolean {

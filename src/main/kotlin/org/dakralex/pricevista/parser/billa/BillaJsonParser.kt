@@ -5,9 +5,9 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromStream
 import org.dakralex.pricevista.QUANTITY_MATH_CONTEXT
-import org.dakralex.pricevista.entities.MeasurementUnit
+import org.dakralex.pricevista.entities.ArticleUnit
 import org.dakralex.pricevista.entities.data.EStore
-import org.dakralex.pricevista.entities.dictionary.guessMeasurementUnit
+import org.dakralex.pricevista.entities.dictionary.guessArticleUnit
 import org.dakralex.pricevista.parser.JsonParser
 import java.io.InputStream
 import java.math.BigDecimal
@@ -45,12 +45,12 @@ object BillaJsonParser : JsonParser<BillaJsonEntry>() {
             ?: entry.descriptionShort
     }
 
-    override fun parseMeasurementUnit(entry: BillaJsonEntry): MeasurementUnit {
+    override fun parseArticleUnit(entry: BillaJsonEntry): ArticleUnit {
         val longName = entry.volumeLabelLong
         val shortName = entry.volumeLabelShort ?: entry.volumeLabelKey
 
-        return guessMeasurementUnit(longName, shortName)
-            ?: super.parseMeasurementUnit(entry)
+        return guessArticleUnit(longName, shortName)
+            ?: super.parseArticleUnit(entry)
     }
 
     override fun parseQuantity(entry: BillaJsonEntry): BigDecimal {

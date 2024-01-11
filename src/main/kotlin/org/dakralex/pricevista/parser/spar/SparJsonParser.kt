@@ -5,9 +5,9 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromStream
 import org.dakralex.pricevista.QUANTITY_MATH_CONTEXT
-import org.dakralex.pricevista.entities.MeasurementUnit
+import org.dakralex.pricevista.entities.ArticleUnit
 import org.dakralex.pricevista.entities.data.EStore
-import org.dakralex.pricevista.entities.dictionary.guessMeasurementUnit
+import org.dakralex.pricevista.entities.dictionary.guessArticleUnit
 import org.dakralex.pricevista.parser.JsonParser
 import java.io.InputStream
 import java.math.BigDecimal
@@ -63,7 +63,7 @@ object SparJsonParser : JsonParser<SparJsonEntry>() {
         return entry.masterValues.description
     }
 
-    override fun parseMeasurementUnit(entry: SparJsonEntry): MeasurementUnit {
+    override fun parseArticleUnit(entry: SparJsonEntry): ArticleUnit {
         val shortDesc3 = entry.masterValues.shortDescription3?.lowercase()
 
         val unitDescriptor = shortDesc3?.replace(quantityRegex, "")
@@ -72,8 +72,8 @@ object SparJsonParser : JsonParser<SparJsonEntry>() {
         // TODO Implement second trial with pricePerUnit property
         //      and /[\,\.\d\€\/]+/g as the removal regex
 
-        return guessMeasurementUnit(shortName = unitDescriptor)
-            ?: super.parseMeasurementUnit(entry)
+        return guessArticleUnit(shortName = unitDescriptor)
+            ?: super.parseArticleUnit(entry)
     }
 
     override fun parseQuantity(entry: SparJsonEntry): BigDecimal {

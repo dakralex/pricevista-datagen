@@ -12,5 +12,5 @@ create table Article
     constraint uc_Article_Name_Brand unique (brand_id, name, unit_id, quantity),
     constraint fk_Article_Brand foreign key (brand_id) references Brand (company_id),
     constraint fk_Article_Country_origin foreign key (origin_country_id) references Country (id),
-    constraint fk_Article_Measurement_Unit foreign key (unit_id) references Measurement_Unit (id)
+    constraint fk_Article_Unit foreign key (unit_id) references Measurement_Unit (id)
 )

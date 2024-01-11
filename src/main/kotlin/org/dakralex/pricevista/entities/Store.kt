@@ -4,6 +4,8 @@ import org.dakralex.pricevista.database.Database
 import org.dakralex.pricevista.database.Entity
 import org.dakralex.pricevista.database.EntityComp
 
+typealias StoreId = Int
+
 /**
  * The [Store] entity describes a place where a retailer distributes articles
  * by advertising, stocking, and selling them over that platform. This could
@@ -13,7 +15,7 @@ import org.dakralex.pricevista.database.EntityComp
  * define the country the online store is intended for.
  */
 data class Store(
-    val id: Int? = null,
+    val id: StoreId? = null,
 
     /** Retailer that owns the store **/
     val retailer: Retailer,

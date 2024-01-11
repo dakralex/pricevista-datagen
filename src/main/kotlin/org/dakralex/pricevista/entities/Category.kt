@@ -4,11 +4,13 @@ import org.dakralex.pricevista.database.Database
 import org.dakralex.pricevista.database.Entity
 import org.dakralex.pricevista.database.EntityComp
 
+typealias CategoryId = Int
+
 /**
  * The [Category] entity describes a category that articles can belong to.
  */
 data class Category(
-    val id: Int? = null,
+    val id: CategoryId? = null,
 
     /** Name of the category **/
     var name: String,

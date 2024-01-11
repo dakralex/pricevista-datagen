@@ -4,6 +4,8 @@ import org.dakralex.pricevista.database.Database
 import org.dakralex.pricevista.database.Entity
 import org.dakralex.pricevista.database.EntityComp
 
+typealias StoreCategoryId = String
+
 /**
  * The [StoreCategory] relation describes the mapping between the store's
  * internal category identifiers to the categories.
@@ -13,7 +15,7 @@ data class StoreCategory(
     val store: Store,
 
     /** Category identifier used by the store internally **/
-    val storeCategoryId: String,
+    val storeCategoryId: StoreCategoryId,
 
     /** Category that the store's internal category identifier references **/
     var category: Category

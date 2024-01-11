@@ -4,13 +4,15 @@ import org.dakralex.pricevista.database.Database
 import org.dakralex.pricevista.database.ResolvableEntity
 import org.dakralex.pricevista.database.ResolvableEntityComp
 
+typealias CompanyId = Int
+
 /**
  * The [Company] entity is the generalization of the different companies that
  * are somewhere in the supply chain. In this micro-world, they are retailers
  * and brands.
  */
 data class Company(
-    var id: Int? = null,
+    var id: CompanyId? = null,
 
     /** Full name of the company **/
     var longName: String? = null,

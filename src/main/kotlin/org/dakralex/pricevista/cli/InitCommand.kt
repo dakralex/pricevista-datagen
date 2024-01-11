@@ -57,11 +57,11 @@ class InitCommand(name: String = "init") :
         logger.info { "Inserting preliminary language data..." }
         Language.insertBatch(db, ELanguage.entries.map(ELanguage::language))
 
-        createTable(db, "Measurement_Unit")
-        logger.info { "Inserting preliminary measurement units data..." }
-        MeasurementUnit.insertBatch(
+        createTable(db, "Article_Unit")
+        logger.info { "Inserting preliminary article units data..." }
+        ArticleUnit.insertBatch(
             db,
-            EMeasurementUnit.entries.map(EMeasurementUnit::unit)
+            EArticleUnit.entries.map(EArticleUnit::unit)
         )
 
         createTable(db, "Place")

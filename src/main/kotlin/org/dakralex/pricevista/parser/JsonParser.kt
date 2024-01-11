@@ -8,7 +8,7 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import org.dakralex.pricevista.QUANTITY_MATH_CONTEXT
 import org.dakralex.pricevista.database.Database
 import org.dakralex.pricevista.entities.*
-import org.dakralex.pricevista.entities.data.EMeasurementUnit
+import org.dakralex.pricevista.entities.data.EArticleUnit
 import java.io.ByteArrayInputStream
 import java.io.File
 import java.io.InputStream
@@ -49,8 +49,8 @@ abstract class JsonParser<T : JsonEntry> {
 
     open fun parseOriginCountry(entry: T): Country? = null
 
-    open fun parseMeasurementUnit(entry: T): MeasurementUnit =
-        EMeasurementUnit.MISC_PIECE.unit
+    open fun parseArticleUnit(entry: T): ArticleUnit =
+        EArticleUnit.MISC_PIECE.unit
 
     open fun parseQuantity(entry: T): BigDecimal =
         BigDecimal(1.0, QUANTITY_MATH_CONTEXT)
@@ -94,7 +94,7 @@ abstract class JsonParser<T : JsonEntry> {
                 name = parseArticleName(entry, articleBrand),
                 description = parseLongDescription(entry),
                 originCountry = parseOriginCountry(entry),
-                unit = parseMeasurementUnit(entry),
+                unit = parseArticleUnit(entry),
                 quantity = parseQuantity(entry),
                 weightable = parseIsWeightable(entry)
             )

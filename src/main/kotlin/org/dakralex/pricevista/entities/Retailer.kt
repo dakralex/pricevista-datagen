@@ -4,6 +4,8 @@ import org.dakralex.pricevista.database.Database
 import org.dakralex.pricevista.database.Entity
 import org.dakralex.pricevista.database.EntityComp
 
+typealias RetailerId = CompanyId
+
 /**
  * The [Retailer] entity describes a specialization of a [Company], which
  * functions as a retailer of one or more stores that sell articles.

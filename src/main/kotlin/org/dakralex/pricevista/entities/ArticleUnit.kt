@@ -4,12 +4,14 @@ import org.dakralex.pricevista.database.Database
 import org.dakralex.pricevista.database.Entity
 import org.dakralex.pricevista.database.EntityComp
 
+typealias ArticleUnitId = Int
+
 /**
- * The [MeasurementUnit] entity describes a measurement unit that is used by
- * stores to quantify their package and volume sizes.
+ * The [ArticleUnit] entity describes a measurement unit that is used by
+ * stores to quantify their articles, packages and volume sizes.
  */
-data class MeasurementUnit(
-    val id: Int,
+data class ArticleUnit(
+    val id: ArticleUnitId,
 
     /** Symbol or label of the measurement unit **/
     val label: String,
@@ -20,14 +22,14 @@ data class MeasurementUnit(
     /** English name of the measurement unit in plural **/
     val pluralName: String = singularName + "s",
 ) : Entity {
-    companion object : EntityComp<MeasurementUnit> {
-        override val tableName: String = "Measurement_Unit"
+    companion object : EntityComp<ArticleUnit> {
+        override val tableName: String = "Article_Unit"
         override val insertStatement: String = """
                 insert into $tableName (id, label, singular_name, plural_name)
                 values (:id, :label, :singularName, :pluralName)
             """.trimIndent()
 
-        override fun insertBatch(db: Database, entries: List<MeasurementUnit>) {
+        override fun insertBatch(db: Database, entries: List<ArticleUnit>) {
             db.updateBatch(insertStatement, entries.map { entry ->
                 arrayOf(
                     entry.id,

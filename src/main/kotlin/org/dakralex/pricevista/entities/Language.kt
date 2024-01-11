@@ -4,13 +4,15 @@ import org.dakralex.pricevista.database.Database
 import org.dakralex.pricevista.database.Entity
 import org.dakralex.pricevista.database.EntityComp
 
+typealias LanguageId = Int
+
 /**
  * The [Language] entity describes a language that is represented in the
  * ISO 639-1 standard definition.
  */
 data class Language(
     /** ISO 639-1 three-digit language code **/
-    val id: Int,
+    val id: LanguageId,
 
     /** ISO 639-1 two-letter language code **/
     val alpha2: String,

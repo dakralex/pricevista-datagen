@@ -5,12 +5,14 @@ import org.dakralex.pricevista.database.ResolvableEntity
 import org.dakralex.pricevista.database.ResolvableEntityComp
 import java.math.BigDecimal
 
+typealias ArticleId = Int
+
 /**
  * The [Article] entity describes an article that is available in one or more
  * stores of the retailers with some details.
  */
 data class Article(
-    var id: Int? = null,
+    var id: ArticleId? = null,
 
     /** Brand of the article **/
     var brand: Brand? = null,
@@ -24,8 +26,8 @@ data class Article(
     /** Country where the article originated from **/
     var originCountry: Country? = null,
 
-    /** Measurement unit of the article **/
-    var unit: MeasurementUnit,
+    /** Article unit of the article **/
+    var unit: ArticleUnit,
 
     /** Quantity of the article in the measurement unit **/
     var quantity: BigDecimal,

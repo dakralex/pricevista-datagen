@@ -4,6 +4,8 @@ import org.dakralex.pricevista.database.Database
 import org.dakralex.pricevista.database.Entity
 import org.dakralex.pricevista.database.EntityComp
 
+typealias BrandId = CompanyId
+
 /**
  * The [Brand] entity describes a specialization of a [Company], which
  * functions as a brand that brand articles that are sold in stores.

@@ -5,6 +5,8 @@ import org.dakralex.pricevista.database.Entity
 import org.dakralex.pricevista.database.EntityComp
 import java.util.*
 
+typealias StoreArticleId = String
+
 /**
  * The [StoreArticle] relation describes the mapping between the store's
  * internal article identifiers to the articles.
@@ -14,7 +16,7 @@ data class StoreArticle(
     val store: Store,
 
     /** Article identifier used by the store internally **/
-    val storeArticleId: String,
+    val storeArticleId: StoreArticleId,
 
     /** Article that the store's internal article identifier references **/
     var article: Article,

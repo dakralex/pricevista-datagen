@@ -4,13 +4,15 @@ import org.dakralex.pricevista.database.Database
 import org.dakralex.pricevista.database.Entity
 import org.dakralex.pricevista.database.EntityComp
 
+typealias CountryId = Int
+
 /**
  * The [Country] entity describes a country that is represented in the
  * ISO 3166-1 standard definition.
  */
 data class Country(
     /** ISO 3166-1 numeric three-digit country code **/
-    val id: Int,
+    val id: CountryId,
 
     /** ISO 3166-1 alpha-2 two-letter country code **/
     val alpha2: String,
