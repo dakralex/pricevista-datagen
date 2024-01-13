@@ -13,7 +13,6 @@ import org.dakralex.pricevista.entities.data.EStore
 import org.dakralex.pricevista.parser.billa.BillaJsonParser
 import org.dakralex.pricevista.parser.hofer.HoferJsonParser
 import org.dakralex.pricevista.parser.spar.SparJsonParser
-import java.io.File
 
 private val logger = KotlinLogging.logger {}
 
@@ -32,7 +31,7 @@ class UpdateCommand(name: String = "update") :
      */
     private val files by argument()
         .file(mustExist = true, mustBeReadable = true)
-        .multiple(default = listOf(File("data/billa-2023-12-18.json")))
+        .multiple()
 
     override fun run() {
         val db = OracleDatabase.connect(
@@ -49,7 +48,6 @@ class UpdateCommand(name: String = "update") :
             EStore.SPAR -> SparJsonParser
         }
 
-        logger.info { "Parse input files..." }
         parser.parseEntries(files)
     }
 }

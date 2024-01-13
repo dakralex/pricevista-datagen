@@ -1,7 +1,7 @@
 package org.dakralex.pricevista.parser.spar
 
 import kotlinx.serialization.Serializable
-import org.dakralex.pricevista.parser.JsonEntry
+import org.dakralex.pricevista.contracts.parser.JsonEntry
 
 @Serializable
 data class SparJsonEntry(

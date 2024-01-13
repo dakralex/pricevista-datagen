@@ -1,4 +1,4 @@
-package org.dakralex.pricevista.entities.dictionary
+package org.dakralex.pricevista.parser
 
 import org.dakralex.pricevista.entities.ArticleUnit
 import org.dakralex.pricevista.entities.data.EArticleUnit

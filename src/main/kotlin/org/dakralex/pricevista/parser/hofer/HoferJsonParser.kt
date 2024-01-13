@@ -6,13 +6,13 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromStream
 import org.dakralex.pricevista.entities.ArticleUnit
 import org.dakralex.pricevista.entities.data.EStore
-import org.dakralex.pricevista.entities.dictionary.guessArticleUnit
-import org.dakralex.pricevista.parser.JsonParser
+import org.dakralex.pricevista.parser.guessArticleUnit
+import org.dakralex.pricevista.parser.StoreJsonParser
 import java.io.InputStream
 
 private val logger = KotlinLogging.logger {}
 
-object HoferJsonParser : JsonParser<HoferJsonEntry>() {
+object HoferJsonParser : StoreJsonParser<HoferJsonEntry>() {
     override val store = EStore.HOFER.store
 
     @OptIn(ExperimentalSerializationApi::class)

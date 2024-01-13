@@ -1,8 +1,8 @@
 package org.dakralex.pricevista.parser.billa
 
 import kotlinx.serialization.Serializable
+import org.dakralex.pricevista.contracts.parser.JsonEntry
 import org.dakralex.pricevista.parser.DoubleAsStringSerializer
-import org.dakralex.pricevista.parser.JsonEntry
 
 @Serializable
 data class BillaJsonEntry(

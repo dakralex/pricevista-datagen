@@ -7,14 +7,14 @@ import kotlinx.serialization.json.decodeFromStream
 import org.dakralex.pricevista.QUANTITY_MATH_CONTEXT
 import org.dakralex.pricevista.entities.ArticleUnit
 import org.dakralex.pricevista.entities.data.EStore
-import org.dakralex.pricevista.entities.dictionary.guessArticleUnit
-import org.dakralex.pricevista.parser.JsonParser
+import org.dakralex.pricevista.parser.guessArticleUnit
+import org.dakralex.pricevista.parser.StoreJsonParser
 import java.io.InputStream
 import java.math.BigDecimal
 
 private val logger = KotlinLogging.logger {}
 
-object BillaJsonParser : JsonParser<BillaJsonEntry>() {
+object BillaJsonParser : StoreJsonParser<BillaJsonEntry>() {
     override val store = EStore.BILLA.store
 
     @OptIn(ExperimentalSerializationApi::class)

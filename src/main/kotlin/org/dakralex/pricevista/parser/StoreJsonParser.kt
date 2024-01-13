@@ -6,6 +6,8 @@ import com.aayushatharva.brotli4j.decoder.DecoderJNI
 import com.aayushatharva.brotli4j.decoder.DirectDecompress
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.dakralex.pricevista.QUANTITY_MATH_CONTEXT
+import org.dakralex.pricevista.contracts.parser.JsonEntry
+import org.dakralex.pricevista.contracts.parser.JsonParser
 import org.dakralex.pricevista.entities.*
 import org.dakralex.pricevista.entities.data.EArticleUnit
 import java.io.ByteArrayInputStream
@@ -17,22 +19,16 @@ import java.util.*
 
 private val logger = KotlinLogging.logger {}
 
-abstract class JsonParser<T : JsonEntry> {
+abstract class StoreJsonParser<T : JsonEntry> : JsonParser {
     abstract val store: Store
 
     open val storeDefaultBrand: Brand? = null
 
     private var parsedCompanies: List<Company> = mutableListOf()
     private var parsedBrands: List<Brand> = mutableListOf()
-    private var parsedCategories: List<Category> =
-        mutableListOf() // TODO Could add categories
     private var parsedArticles: List<Article> = mutableListOf()
-    private var parsedArticleCategories: List<ArticleCategory> =
-        mutableListOf() // TODO Could add categories
     private var parsedArticleImages: List<ArticleImage> = mutableListOf()
     private var parsedStoreArticles: List<StoreArticle> = mutableListOf()
-    private var parsedStoreCategories: List<StoreCategory> =
-        mutableListOf() // TODO Could add categories
 
 
     abstract fun decodeJsonFromInputStream(inputStream: InputStream): List<T>
@@ -72,7 +68,7 @@ abstract class JsonParser<T : JsonEntry> {
             .replace(brand?.company?.shortName ?: "", "", true).trim()
     }
 
-    private fun parseEntries(inputStream: InputStream, date: Date = Date()) {
+    private fun parseEntry(inputStream: InputStream, date: Date) {
         // TODO This should be doable with abstraction, but I got an unresolvable
         //      exception I couldn't fix, see kotlinx.serialization#2537
         val entries = decodeJsonFromInputStream(inputStream)
@@ -129,37 +125,46 @@ abstract class JsonParser<T : JsonEntry> {
         logger.info { "Parsed ${parsedStoreArticles.size} unique store articles." }
     }
 
-    fun parseEntries(files: List<File>) {
-        logger.info { "Parsing ${files.size} JSON files..." }
+    override fun parseEntry(file: File) {
+        val fileName = file.name
+        val fileExt = file.extension
+        val fileDate = Date(file.lastModified())
 
-        val inputStreamsTimestamped = files.map { file ->
-            val date = Date(file.lastModified())
-
-            val inputStream = when (file.extension) {
-                "json" -> file.inputStream()
-                "br" -> decodeBrotliFile(file)
-                else -> TODO("Not implemented")
-            }
-
-            Pair(inputStream, date)
+        // TODO Should not rely solely on extension here
+        val inputStream = when (fileExt) {
+            "json" -> file.inputStream()
+            "br" -> decodeBrotliFile(file)
+            else -> throw IllegalArgumentException("Could not parse file '$fileName' with extension '$fileExt'.")
         }
 
-        inputStreamsTimestamped.map { inputStream ->
-            parseEntries(inputStream.first, inputStream.second)
-        }
+        parseEntry(inputStream, fileDate)
     }
 
-    private fun decodeBrotliFile(it: File): ByteArrayInputStream {
-        Brotli4jLoader.ensureAvailability()
+    override fun parseEntries(files: List<File>) {
+        logger.info { "Parsing ${files.size} files..." }
 
-        logger.info { "Decompressing ${it.name}..." }
+        files.forEach(::parseEntry)
+
+        logger.info { "Parsed ${files.size} successfully." }
+    }
+
+    private fun decodeBrotliFile(brotliFile: File): ByteArrayInputStream {
+        val fileName = brotliFile.name
+
+        try {
+            Brotli4jLoader.ensureAvailability()
+        } catch (e: UnsatisfiedLinkError) {
+            logger.error { "Could not decode brotli file '$fileName' because library could not be loaded: $e" }
+        }
+
+        logger.info { "Decompressing brotli file '$fileName'..." }
 
         val directDecompress: DirectDecompress =
-            Decoder.decompress(it.inputStream().readAllBytes())
+            Decoder.decompress(brotliFile.inputStream().readAllBytes())
 
         when (directDecompress.resultStatus) {
-            DecoderJNI.Status.DONE -> logger.info { "Successfully decompressed ${it.name}." }
-            else -> logger.error { "Some error occurred while decompressing ${it.name}." }
+            DecoderJNI.Status.DONE -> logger.info { "Successfully decompressed file '$fileName'." }
+            else -> logger.error { "Some error occurred while decompressing file '$fileName': ${directDecompress.resultStatus.name}" }
         }
 
         return directDecompress.getDecompressedData().inputStream()

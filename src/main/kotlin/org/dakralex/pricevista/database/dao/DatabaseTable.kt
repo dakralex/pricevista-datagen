@@ -32,12 +32,16 @@ sealed class DatabaseTable<E : Entity, N : Any>(
     private val cleanEntries = mutableSetOf<E>()
     private val newEntries = mutableSetOf<E>()
 
+    private fun initializeWithTableEntries() {
+        cleanEntries += db.query(selectAllStmt, mapper = ::mapFromResultSet)
+    }
+
     open fun initialize(): Boolean {
         if (isNotExistent) {
             return createTable()
         }
 
-        cleanEntries += db.query(selectAllStmt, mapper = ::mapFromResultSet)
+        initializeWithTableEntries()
         return false
     }
 
@@ -84,8 +88,11 @@ sealed class DatabaseTable<E : Entity, N : Any>(
         logger.info { "$tableName: Committing $newCount entries..." }
 
         val updateCount = db.updateBatch(insertFullStmt, propArrays).sum()
-        cleanEntries.addAll(newEntries)
+
+        // TODO Improve inefficient memory management
+        cleanEntries.clear()
         newEntries.clear()
+        initializeWithTableEntries()
 
         val succeeded = updateCount == newCount
 
