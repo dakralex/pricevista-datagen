@@ -15,7 +15,7 @@ private val logger = KotlinLogging.logger {}
 sealed class DatabaseTable<E : Entity, N : Any>(
     val db: Database,
     private val tableName: String,
-    attributes: List<String>
+    attributes: Sequence<String>
 ) : EntityDao<E, N> {
     private val selectAllStmt: String =
         SelectStatement(tableName, attributes).toString()
@@ -61,10 +61,6 @@ sealed class DatabaseTable<E : Entity, N : Any>(
                 || newEntries.add(entity)
     }
 
-    override fun addBatch(entities: Iterable<E>) {
-        entities.forEach(::add)
-    }
-
     final override fun addBatch(entities: Sequence<E>) {
         entities.forEach(::add)
     }
@@ -76,11 +72,11 @@ sealed class DatabaseTable<E : Entity, N : Any>(
             ?: newEntries.find(entityWithId)
     }
 
-    override fun commit(): Boolean {
+    override fun commit(): EntityDao<E, N> {
         val newCount = newEntries.size
 
         if (newCount == 0) {
-            return false
+            return this
         }
 
         val propArrays = newEntries.map(::mapToPropArray)
@@ -94,13 +90,18 @@ sealed class DatabaseTable<E : Entity, N : Any>(
         newEntries.clear()
         initializeWithTableEntries()
 
-        val succeeded = updateCount == newCount
-
-        if (!succeeded) {
+        if (updateCount != newCount) {
             logger.warn { "$tableName: Committed $newCount entries, but only $updateCount rows were updated." }
         }
 
-        return succeeded
+        return this
+    }
+
+    override fun list(): Sequence<E> {
+        return sequence {
+            yieldAll(cleanEntries)
+            yieldAll(newEntries)
+        }
     }
 
     private fun createTable(): Boolean {

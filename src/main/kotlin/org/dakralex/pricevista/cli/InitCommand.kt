@@ -8,7 +8,6 @@ import com.github.ajalt.clikt.parameters.options.option
 import com.github.ajalt.clikt.parameters.options.split
 import com.github.ajalt.clikt.parameters.types.enum
 import io.github.oshai.kotlinlogging.KotlinLogging
-import org.dakralex.pricevista.database.OracleDatabase
 import org.dakralex.pricevista.database.PriceVistaDatabase
 import org.dakralex.pricevista.entities.data.EStore
 
@@ -29,18 +28,8 @@ class InitCommand(name: String = "init") :
         .default(EStore.entries)
 
     override fun run() {
-        val db = OracleDatabase.connect(
-            dbOpts.dbHost,
-            dbOpts.dbPort,
-            dbOpts.dbName,
-            dbOpts.dbUser,
-            dbOpts.dbPass
-        )
-
-        val pvDb = PriceVistaDatabase(db)
-        pvDb.initialize()
-        pvDb.commit()
-
+        val db = dbOpts.toOracleDatabase()
+        PriceVistaDatabase(db).init().commit()
         logger.info { "PriceVista database initialized successfully." }
     }
 }

@@ -13,7 +13,12 @@ class LanguageTable(
     DatabaseTable<Language, LanguageId>(
         db,
         "Language",
-        listOf("id", "alpha2", "alpha3", "name")
+        sequenceOf(
+            "id",
+            "alpha2",
+            "alpha3",
+            "name"
+        )
     ) {
 
     override fun initialize(): Boolean {
@@ -26,12 +31,7 @@ class LanguageTable(
     }
 
     override fun isUnique(entity: Language): (Language) -> Boolean {
-        return { e ->
-            e.id == entity.id ||
-                    e.alpha2 == entity.alpha2 &&
-                    e.alpha3 == entity.alpha3 &&
-                    e.name == entity.name
-        }
+        return { e -> e.id == entity.id }
     }
 
     override fun matchesWithId(id: LanguageId): (Language) -> Boolean {

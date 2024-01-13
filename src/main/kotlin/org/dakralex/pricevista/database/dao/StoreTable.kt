@@ -16,7 +16,13 @@ class StoreTable(
     DatabaseTable<Store, StoreId>(
         db,
         "Store",
-        listOf("id", "retailer_id", "place_id", "currency_id", "language_id")
+        sequenceOf(
+            "id",
+            "retailer_id",
+            "place_id",
+            "currency_id",
+            "language_id"
+        )
     ) {
     override fun isUnique(entity: Store): (Store) -> Boolean {
         return { e -> e.id == entity.id }

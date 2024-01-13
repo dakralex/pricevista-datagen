@@ -16,13 +16,17 @@ class CurrentPriceTable(
     DatabaseTable<CurrentPrice, CurrentPriceKey>(
         db,
         "Current_Price",
-        listOf("store_id", "article_id", "value", "changed_at", "updated_at")
+        sequenceOf(
+            "store_id",
+            "article_id",
+            "value",
+            "changed_at",
+            "updated_at"
+        )
     ) {
     override fun isUnique(entity: CurrentPrice): (CurrentPrice) -> Boolean {
-        val matchesId =
-            matchesWithId(CurrentPriceKey(entity.store, entity.article))
-
-        return { e -> matchesId(e) }
+        // TODO Make the CurrentPrice transitive when no id was given
+        return { e -> e.store.id == entity.store.id && e.article.id == entity.article.id }
     }
 
     override fun matchesWithId(id: CurrentPriceKey): (CurrentPrice) -> Boolean {

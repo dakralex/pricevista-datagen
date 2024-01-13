@@ -18,7 +18,7 @@ class ArticleTable(
     DatabaseTable<Article, ArticleId>(
         db,
         "Article",
-        listOf(
+        sequenceOf(
             "id",
             "brand_id",
             "name",
@@ -30,12 +30,13 @@ class ArticleTable(
         )
     ) {
     override fun isUnique(entity: Article): (Article) -> Boolean {
-        return { e ->
-            e.id == entity.id ||
-                    e.brand == entity.brand &&
-                    e.name == entity.name &&
-                    e.articleUnit == entity.articleUnit &&
-                    e.quantity == entity.quantity
+        return if (entity.id == null) { e ->
+            e.brand == entity.brand
+                    && e.name == entity.name
+                    && e.articleUnit == entity.articleUnit
+                    && e.quantity == entity.quantity
+        } else { e ->
+            e.id == entity.id
         }
     }
 

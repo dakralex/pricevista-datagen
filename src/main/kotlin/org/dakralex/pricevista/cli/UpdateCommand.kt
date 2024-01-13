@@ -31,13 +31,8 @@ class UpdateCommand(name: String = "update") :
         .multiple()
 
     override fun run() {
-        val db = OracleDatabase.connect(
-            dbOpts.dbHost,
-            dbOpts.dbPort,
-            dbOpts.dbName,
-            dbOpts.dbUser,
-            dbOpts.dbPass
-        )
+        val db = dbOpts.toOracleDatabase()
+        val repo = PriceVistaDatabase(db).init()
 
         val parser = when (store) {
             EStore.BILLA -> BillaJsonParser

@@ -14,7 +14,10 @@ class RetailerTable(
     DatabaseTable<Retailer, RetailerId>(
         db,
         "Retailer",
-        listOf("company_id", "website_url")
+        sequenceOf(
+            "company_id",
+            "website_url"
+        )
     ) {
     override fun isUnique(entity: Retailer): (Retailer) -> Boolean {
         return { e -> e.company.id == entity.company.id }

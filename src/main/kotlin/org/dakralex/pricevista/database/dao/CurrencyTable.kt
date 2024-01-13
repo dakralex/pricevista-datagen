@@ -13,7 +13,14 @@ class CurrencyTable(
     DatabaseTable<Currency, CurrencyId>(
         db,
         "Currency",
-        listOf("id", "alpha3", "scale", "symbol", "minor", "name")
+        sequenceOf(
+            "id",
+            "alpha3",
+            "scale",
+            "symbol",
+            "minor",
+            "name"
+        )
     ) {
 
     override fun initialize(): Boolean {
@@ -26,11 +33,7 @@ class CurrencyTable(
     }
 
     override fun isUnique(entity: Currency): (Currency) -> Boolean {
-        return { e ->
-            e.id == entity.id ||
-                    e.alpha3 == entity.alpha3 &&
-                    e.name == entity.name
-        }
+        return { e -> e.id == entity.id }
     }
 
     override fun matchesWithId(id: CurrencyId): (Currency) -> Boolean {

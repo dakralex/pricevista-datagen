@@ -16,7 +16,12 @@ class RecordedPriceTable(
     DatabaseTable<RecordedPrice, RecordedPriceKey>(
         db,
         "Recorded_Price",
-        listOf("store_id", "article_id", "changed_at", "value")
+        sequenceOf(
+            "store_id",
+            "article_id",
+            "changed_at",
+            "value"
+        )
     ) {
     override fun isUnique(entity: RecordedPrice): (RecordedPrice) -> Boolean {
         val key =

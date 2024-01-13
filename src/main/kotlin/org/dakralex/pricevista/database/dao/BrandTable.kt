@@ -14,10 +14,18 @@ class BrandTable(
     DatabaseTable<Brand, BrandId>(
         db,
         "Brand",
-        listOf("company_id", "logo_url")
+        sequenceOf(
+            "company_id",
+            "logo_url"
+        )
     ) {
     override fun isUnique(entity: Brand): (Brand) -> Boolean {
-        return { e -> e.company.id == entity.company.id }
+        return if (entity.company.id == null) { e ->
+            e.company.longName == entity.company.longName
+                    && e.company.shortName == entity.company.shortName
+        } else { e ->
+            e.company.id == entity.company.id
+        }
     }
 
     override fun matchesWithId(id: BrandId): (Brand) -> Boolean {

@@ -14,12 +14,17 @@ class ArticleImageTable(
     DatabaseTable<ArticleImage, ArticleImageKey>(
         db,
         "Article_Image",
-        listOf("article_id", "id", "image_url")
+        sequenceOf(
+            "article_id",
+            "id",
+            "image_url"
+        )
     ) {
     override fun isUnique(entity: ArticleImage): (ArticleImage) -> Boolean {
-        return { e ->
-            e.article.id == entity.article.id
-                    && (e.id == entity.id || e.imageUrl == entity.imageUrl)
+        return if (entity.id == null) { e ->
+            e.article.id == entity.article.id && e.imageUrl == entity.imageUrl
+        } else { e ->
+            e.article.id == entity.article.id && e.id == entity.id
         }
     }
 

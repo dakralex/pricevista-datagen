@@ -105,7 +105,16 @@ class OracleDatabase(private val conn: Connection) : Database {
                 ps.addBatch()
             }
 
-            ps.executeBatch()
+            try {
+                ps.executeBatch()
+            } catch (e: BatchUpdateException) {
+                val updateCount = e.updateCounts.sum()
+                val probableItem = paramsList[updateCount].joinToString(", ")
+
+                logger.error { "Could not fully execute batch update (update count: $updateCount)" }
+                logger.error { "Probable erroneous item values: ($probableItem)" }
+                throw e
+            }
         }
     }
 

@@ -15,7 +15,12 @@ class CompanyTable(
     DatabaseTable<Company, CompanyId>(
         db,
         "Company",
-        listOf("id", "long_name", "short_name", "place_id")
+        sequenceOf(
+            "id",
+            "long_name",
+            "short_name",
+            "place_id"
+        )
     ) {
 
     override fun initialize(): Boolean {
@@ -28,7 +33,11 @@ class CompanyTable(
     }
 
     override fun isUnique(entity: Company): (Company) -> Boolean {
-        return { e -> e.id == entity.id || e.shortName == entity.shortName }
+        return if (entity.id == null) { e ->
+            e.shortName == entity.shortName
+        } else { e ->
+            e.id == entity.id
+        }
     }
 
     override fun matchesWithId(id: CompanyId): (Company) -> Boolean {

@@ -6,26 +6,31 @@ import com.github.ajalt.clikt.parameters.options.help
 import com.github.ajalt.clikt.parameters.options.option
 import com.github.ajalt.clikt.parameters.options.prompt
 import com.github.ajalt.clikt.parameters.types.int
+import org.dakralex.pricevista.database.OracleDatabase
 
 class DatabaseOptions : OptionGroup(name = "Database options") {
-    val dbHost by option(valueSourceKey = "db.host")
+    private val dbHost by option(valueSourceKey = "db.host")
         .help("Changes database host")
         .prompt("Host")
 
-    val dbPort by option(valueSourceKey = "db.port")
+    private val dbPort by option(valueSourceKey = "db.port")
         .help("Changes database port")
         .int()
         .default(1521)
 
-    val dbName by option(valueSourceKey = "db.name")
+    private val dbName by option(valueSourceKey = "db.name")
         .help("Changes database name")
         .default("orclcdb")
 
-    val dbUser by option(valueSourceKey = "db.user")
+    private val dbUser by option(valueSourceKey = "db.user")
         .help("Changes database username")
         .prompt("Username")
 
-    val dbPass by option(valueSourceKey = "db.pass")
+    private val dbPass by option(valueSourceKey = "db.pass")
         .help("Changes database password")
         .prompt("Password")
+
+    fun toOracleDatabase(): OracleDatabase {
+        return OracleDatabase.connect(dbHost, dbPort, dbName, dbUser, dbPass)
+    }
 }

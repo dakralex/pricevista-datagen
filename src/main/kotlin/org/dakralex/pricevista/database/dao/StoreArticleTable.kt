@@ -16,7 +16,12 @@ class StoreArticleTable(
     DatabaseTable<StoreArticle, StoreArticleKey>(
         db,
         "Store_Article",
-        listOf("store_id", "store_article_id", "article_id", "since")
+        sequenceOf(
+            "store_id",
+            "store_article_id",
+            "article_id",
+            "since"
+        )
     ) {
     override fun isUnique(entity: StoreArticle): (StoreArticle) -> Boolean {
         return { e ->

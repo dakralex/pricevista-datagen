@@ -1,9 +1,12 @@
 package org.dakralex.pricevista.database
 
+import org.dakralex.pricevista.contracts.dao.*
 import org.dakralex.pricevista.contracts.database.Database
+import org.dakralex.pricevista.contracts.database.PriceVistaRepository
 import org.dakralex.pricevista.database.dao.*
+import org.dakralex.pricevista.entities.*
 
-class PriceVistaDatabase(val db: Database) {
+class PriceVistaDatabase(val db: Database) : PriceVistaRepository {
     private val countries = CountryTable(db)
     private val currencies = CurrencyTable(db)
     private val languages = LanguageTable(db)
@@ -24,7 +27,7 @@ class PriceVistaDatabase(val db: Database) {
     private val currentPrices = CurrentPriceTable(db, stores, articles)
     private val recordedPrices = RecordedPriceTable(db, stores, articles)
 
-    fun initialize() {
+    override fun init(): PriceVistaDatabase {
         countries.initialize()
         currencies.initialize()
         languages.initialize()
@@ -43,9 +46,11 @@ class PriceVistaDatabase(val db: Database) {
         storeArticles.initialize()
         currentPrices.initialize()
         recordedPrices.initialize()
+
+        return this
     }
 
-    fun commit() {
+    override fun commit(): PriceVistaDatabase {
         countries.commit()
         currencies.commit()
         languages.commit()
@@ -64,9 +69,11 @@ class PriceVistaDatabase(val db: Database) {
         storeArticles.commit()
         currentPrices.commit()
         recordedPrices.commit()
+
+        return this
     }
 
-    fun dropTables() {
+    override fun drop(): PriceVistaDatabase {
         recordedPrices.dropTable()
         currentPrices.dropTable()
         storeArticles.dropTable()
@@ -85,5 +92,43 @@ class PriceVistaDatabase(val db: Database) {
         languages.dropTable()
         currencies.dropTable()
         countries.dropTable()
+
+        return this
+    }
+
+    override fun addCompanies(entries: Sequence<Company>): CompanyDao {
+        companies.addBatch(entries)
+
+        return companies
+    }
+
+    override fun addBrands(entries: Sequence<Brand>): BrandDao {
+        brands.addBatch(entries)
+
+        return brands
+    }
+
+    override fun addArticles(entries: Sequence<Article>): ArticleDao {
+        articles.addBatch(entries)
+
+        return articles
+    }
+
+    override fun addArticleImages(entries: Sequence<ArticleImage>): ArticleImageDao {
+        articleImages.addBatch(entries)
+
+        return articleImages
+    }
+
+    override fun addStoreArticles(entries: Sequence<StoreArticle>): StoreArticleDao {
+        storeArticles.addBatch(entries)
+
+        return storeArticles
+    }
+
+    override fun addRecordedPrices(entries: Sequence<RecordedPrice>): RecordedPriceDao {
+        recordedPrices.addBatch(entries)
+
+        return recordedPrices
     }
 }

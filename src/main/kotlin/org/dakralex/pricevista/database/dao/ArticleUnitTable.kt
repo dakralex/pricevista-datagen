@@ -13,7 +13,12 @@ class ArticleUnitTable(
     DatabaseTable<ArticleUnit, ArticleUnitId>(
         db,
         "Article_Unit",
-        listOf("id", "label", "singular_name", "plural_name")
+        sequenceOf(
+            "id",
+            "label",
+            "singular_name",
+            "plural_name"
+        )
     ) {
 
     override fun initialize(): Boolean {
@@ -26,12 +31,7 @@ class ArticleUnitTable(
     }
 
     override fun isUnique(entity: ArticleUnit): (ArticleUnit) -> Boolean {
-        return { e ->
-            e.id == entity.id ||
-                    e.label == entity.label &&
-                    e.singularName == entity.singularName &&
-                    e.pluralName == entity.pluralName
-        }
+        return { e -> e.id == entity.id }
     }
 
     override fun matchesWithId(id: ArticleUnitId): (ArticleUnit) -> Boolean {

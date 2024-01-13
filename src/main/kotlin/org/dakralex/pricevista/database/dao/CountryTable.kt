@@ -13,7 +13,12 @@ class CountryTable(
     DatabaseTable<Country, CountryId>(
         db,
         "Country",
-        listOf("id", "alpha2", "alpha3", "name")
+        sequenceOf(
+            "id",
+            "alpha2",
+            "alpha3",
+            "name"
+        )
     ) {
 
     override fun initialize(): Boolean {
@@ -26,12 +31,7 @@ class CountryTable(
     }
 
     override fun isUnique(entity: Country): (Country) -> Boolean {
-        return { e ->
-            e.id == entity.id ||
-                    e.alpha2 == entity.alpha2 &&
-                    e.alpha3 == entity.alpha3 &&
-                    e.name == entity.name
-        }
+        return { e -> e.id == entity.id }
     }
 
     override fun matchesWithId(id: CountryId): (Country) -> Boolean {

@@ -14,9 +14,13 @@ class CompanyParticipationTable(
     DatabaseTable<CompanyParticipation, CompanyParticipationKey>(
         db,
         "Company_Participation",
-        listOf("stakeholder_id", "company_id")
+        sequenceOf(
+            "stakeholder_id",
+            "company_id"
+        )
     ) {
     override fun isUnique(entity: CompanyParticipation): (CompanyParticipation) -> Boolean {
+        // TODO Make the CompanyParticipation transitive when no id was given
         return { e ->
             e.stakeholder.id == entity.stakeholder.id
                     && e.company.id == entity.company.id

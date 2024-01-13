@@ -15,7 +15,7 @@ class PlaceTable(
     DatabaseTable<Place, PlaceId>(
         db,
         "Place",
-        listOf(
+        sequenceOf(
             "id",
             "country_id",
             "admin_area",
@@ -35,13 +35,14 @@ class PlaceTable(
     }
 
     override fun isUnique(entity: Place): (Place) -> Boolean {
-        return { e ->
-            entity.id != null && e.id == entity.id ||
-                    e.country == entity.country &&
-                    e.adminArea == entity.adminArea &&
-                    e.locality == entity.locality &&
-                    e.postalCode == entity.postalCode &&
-                    e.streetAddress == entity.streetAddress
+        return if (entity.id == null) { e ->
+            e.country == entity.country
+                    && e.adminArea == entity.adminArea
+                    && e.locality == entity.locality
+                    && e.postalCode == entity.postalCode
+                    && e.streetAddress == entity.streetAddress
+        } else { e ->
+            e.id == entity.id
         }
     }
 
