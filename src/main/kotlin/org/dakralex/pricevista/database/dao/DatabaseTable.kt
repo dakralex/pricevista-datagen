@@ -14,7 +14,7 @@ private val logger = KotlinLogging.logger {}
 
 sealed class DatabaseTable<E : Entity, N : Any>(
     val db: Database,
-    val tableName: String,
+    private val tableName: String,
     attributes: List<String>
 ) : EntityDao<E, N> {
     private val selectAllStmt: String =
@@ -103,7 +103,7 @@ sealed class DatabaseTable<E : Entity, N : Any>(
         return succeeded
     }
 
-    fun createTable(): Boolean {
+    private fun createTable(): Boolean {
         return runStatement("create", ddlPath)
     }
 

@@ -7,14 +7,11 @@ import com.github.ajalt.clikt.parameters.arguments.multiple
 import com.github.ajalt.clikt.parameters.groups.provideDelegate
 import com.github.ajalt.clikt.parameters.types.enum
 import com.github.ajalt.clikt.parameters.types.file
-import io.github.oshai.kotlinlogging.KotlinLogging
 import org.dakralex.pricevista.database.OracleDatabase
 import org.dakralex.pricevista.entities.data.EStore
 import org.dakralex.pricevista.parser.billa.BillaJsonParser
 import org.dakralex.pricevista.parser.hofer.HoferJsonParser
 import org.dakralex.pricevista.parser.spar.SparJsonParser
-
-private val logger = KotlinLogging.logger {}
 
 class UpdateCommand(name: String = "update") :
     CliktCommand(name = name, help = "Update the database") {

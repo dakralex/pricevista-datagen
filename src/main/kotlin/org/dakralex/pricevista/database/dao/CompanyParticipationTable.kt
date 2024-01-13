@@ -9,7 +9,7 @@ import java.sql.ResultSet
 
 class CompanyParticipationTable(
     db: Database,
-    val companies: CompanyDao
+    private val companies: CompanyDao
 ) : CompanyParticipationDao,
     DatabaseTable<CompanyParticipation, CompanyParticipationKey>(
         db,
