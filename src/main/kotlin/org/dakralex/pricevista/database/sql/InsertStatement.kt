@@ -1,4 +1,4 @@
-package org.dakralex.pricevista.database
+package org.dakralex.pricevista.database.sql
 
 import org.dakralex.pricevista.contracts.database.SqlStatement
 
@@ -7,9 +7,8 @@ class InsertStatement(
     private val attributes: Sequence<String>
 ) : SqlStatement {
     override fun toString(): String {
-        val assignments = attributes.joinToString(", ")
-        val placeholders = attributes.map { it.replace("_", "") }
-            .joinToString(", ") { ":$it" }
+        val assignments = SqlStatement.formatAttributes(attributes)
+        val placeholders = SqlStatement.formatPlaceholders(attributes)
 
         return """insert into $tableName ($assignments) values ($placeholders)"""
     }

@@ -4,8 +4,8 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import org.dakralex.pricevista.contracts.dao.EntityDao
 import org.dakralex.pricevista.contracts.database.Database
 import org.dakralex.pricevista.contracts.entities.Entity
-import org.dakralex.pricevista.database.InsertStatement
-import org.dakralex.pricevista.database.SelectStatement
+import org.dakralex.pricevista.database.sql.InsertStatement
+import org.dakralex.pricevista.database.sql.SelectStatement
 import java.io.BufferedReader
 import java.io.FileNotFoundException
 import java.sql.ResultSet

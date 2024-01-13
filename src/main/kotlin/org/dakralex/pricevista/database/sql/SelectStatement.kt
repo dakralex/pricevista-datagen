@@ -1,4 +1,4 @@
-package org.dakralex.pricevista.database
+package org.dakralex.pricevista.database.sql
 
 import org.dakralex.pricevista.contracts.database.SqlStatement
 
@@ -7,7 +7,7 @@ class SelectStatement(
     private val attributes: Sequence<String>
 ) : SqlStatement {
     override fun toString(): String {
-        val assignments = attributes.joinToString(", ")
+        val assignments = SqlStatement.formatAttributes(attributes)
 
         return """select $assignments from $tableName"""
     }
