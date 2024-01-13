@@ -1,10 +1,9 @@
 package org.dakralex.pricevista.entities
 
-import org.dakralex.pricevista.contracts.database.Database
-import org.dakralex.pricevista.database.Entity
-import org.dakralex.pricevista.database.EntityComp
+import org.dakralex.pricevista.contracts.entities.Entity
 
 typealias StoreCategoryId = String
+typealias StoreCategoryKey = Pair<Store, StoreCategoryId>
 
 /**
  * The [StoreCategory] relation describes the mapping between the store's
@@ -19,16 +18,4 @@ data class StoreCategory(
 
     /** Category that the store's internal category identifier references **/
     var category: Category
-) : Entity {
-    companion object : EntityComp<StoreCategory> {
-        override val tableName: String = "Store_Category"
-        override val insertStatement: String = """
-                insert into $tableName (store_id, store_category_id, category_id)
-                values (:storeId, :storeCategoryId, :categoryId)
-            """.trimIndent()
-    }
-
-    override fun insert(db: Database) {
-        db.update(insertStatement, store.id, storeCategoryId, category.id)
-    }
-}
+) : Entity

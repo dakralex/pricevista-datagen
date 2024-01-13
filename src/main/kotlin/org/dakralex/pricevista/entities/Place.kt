@@ -1,8 +1,6 @@
 package org.dakralex.pricevista.entities
 
-import org.dakralex.pricevista.contracts.database.Database
-import org.dakralex.pricevista.database.Entity
-import org.dakralex.pricevista.database.EntityComp
+import org.dakralex.pricevista.contracts.entities.Entity
 
 typealias PlaceId = Int
 
@@ -26,37 +24,4 @@ data class Place(
 
     /** Street address line of the place **/
     var streetAddress: String? = null
-) : Entity {
-    companion object : EntityComp<Place> {
-        override val tableName: String = "Place"
-        override val insertStatement: String = """
-                insert into $tableName (id, country_id, admin_area, locality, postal_code, street_address)
-                values (:id, :countryId, :adminArea, :locality, :postalCode, :streetAddress)
-            """.trimIndent()
-
-        override fun insertBatch(db: Database, entries: List<Place>) {
-            db.updateBatch(insertStatement, entries.map { entry ->
-                arrayOf(
-                    entry.id,
-                    entry.country.id,
-                    entry.adminArea,
-                    entry.locality,
-                    entry.postalCode,
-                    entry.streetAddress
-                )
-            })
-        }
-    }
-
-    override fun insert(db: Database) {
-        db.update(
-            insertStatement,
-            id,
-            country.id,
-            adminArea,
-            locality,
-            postalCode,
-            streetAddress
-        )
-    }
-}
+) : Entity

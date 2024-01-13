@@ -3,8 +3,7 @@ package org.dakralex.pricevista.database
 import io.github.oshai.kotlinlogging.KotlinLogging
 import oracle.jdbc.driver.OracleDriver
 import org.dakralex.pricevista.contracts.database.Database
-import org.dakralex.pricevista.contracts.database.Mapper
-import java.io.BufferedReader
+import org.dakralex.pricevista.contracts.database.ResultSetMapper
 import java.sql.*
 
 private val logger = KotlinLogging.logger {}
@@ -44,78 +43,34 @@ class OracleDatabase(private val conn: Connection) : Database {
     }
 
     override fun execute(sql: String, vararg params: Any): Boolean {
-        return conn.prepareStatement(sql).use { statement ->
-            params.withIndex().forEach { (index, param) ->
-                statement.setObject(index + 1, param)
+        return conn.prepareStatement(sql).use { ps ->
+            params.withIndex().forEach { (i, param) ->
+                val index = i + 1
+
+                ps.setObject(index, param)
             }
 
-            statement.execute()
+            ps.execute()
         }
-    }
-
-    override fun executeMigration(
-        action: String,
-        entityName: String,
-        target: String
-    ): Boolean {
-        val actionName = action.lowercase()
-
-        val path =
-            "migrations/${target}/${actionName}/${actionName}_${entityName.lowercase()}.sql"
-        val script = this::class.java.classLoader
-            .getResourceAsStream(path)?.use { stream ->
-                stream.bufferedReader().use(BufferedReader::readText)
-            }
-
-        if (script == null) {
-            logger.warn { "Script for entity $entityName not found, skip $actionName." }
-
-            return false
-        }
-
-        when (actionName) {
-            "create" -> {
-                if (isTableExistent(entityName)) {
-                    logger.info { "$entityName is already existent, skip $actionName." }
-
-                    return false
-                }
-            }
-
-            else -> {
-                if (!isTableExistent(entityName)) {
-                    logger.info { "$entityName is not existent, skip $actionName." }
-
-                    return false
-                }
-            }
-        }
-
-        val actionVerb = actionName.replaceFirstChar(Char::uppercase)
-        logger.info { "$actionVerb $entityName table..." }
-
-        return execute(script)
     }
 
     override fun <T> query(
         sql: String,
         vararg params: Any?,
-        mapper: Mapper<T>
+        mapper: ResultSetMapper<T>
     ): List<T> {
-        return conn.prepareStatement(sql).use { statement ->
-            params.withIndex().forEach { (index, param) ->
-                if (param == null) {
-                    statement.setObject(index + 1, Types.NULL)
-                } else {
-                    statement.setObject(index + 1, param)
-                }
+        return conn.prepareStatement(sql).use { ps ->
+            params.withIndex().forEach { (i, param) ->
+                val index = i + 1
+
+                ps.setObject(index, param)
             }
 
-            statement.executeQuery().use { set ->
+            ps.executeQuery().use { s ->
                 val result = mutableListOf<T>()
 
-                while (set.next()) {
-                    result.add(mapper(set))
+                while (s.next()) {
+                    result.add(mapper(s))
                 }
 
                 result
@@ -124,16 +79,14 @@ class OracleDatabase(private val conn: Connection) : Database {
     }
 
     override fun update(sql: String, vararg params: Any?): Int {
-        return conn.prepareStatement(sql).use { statement ->
-            params.withIndex().forEach { (index, param) ->
-                if (param == null) {
-                    statement.setObject(index + 1, Types.NULL)
-                } else {
-                    statement.setObject(index + 1, param)
-                }
+        return conn.prepareStatement(sql).use { ps ->
+            params.withIndex().forEach { (i, param) ->
+                val index = i + 1
+
+                ps.setObject(index, param)
             }
 
-            statement.executeUpdate()
+            ps.executeUpdate()
         }
     }
 
@@ -141,32 +94,30 @@ class OracleDatabase(private val conn: Connection) : Database {
         sql: String,
         paramsList: List<Array<Any?>>
     ): IntArray {
-        return conn.prepareStatement(sql).use { statement ->
+        return conn.prepareStatement(sql).use { ps ->
             paramsList.forEach { params ->
-                params.withIndex().forEach { (index, param) ->
-                    if (param == null) {
-                        statement.setObject(index + 1, Types.NULL)
-                    } else {
-                        statement.setObject(index + 1, param)
-                    }
+                params.withIndex().forEach { (i, param) ->
+                    val index = i + 1
+
+                    ps.setObject(index, param)
                 }
 
-                statement.addBatch()
+                ps.addBatch()
             }
 
-            statement.executeBatch()
+            ps.executeBatch()
         }
     }
 
     private fun isObjectExistent(
-        objectName: String,
-        type: String
+        type: String,
+        name: String
     ): Boolean {
         val sql = """
             select count(*) as COUNT
             from ALL_OBJECTS
             where OBJECT_TYPE in ('${type.uppercase()}')
-            and OBJECT_NAME = '${objectName.uppercase()}'
+            and OBJECT_NAME = '${name.uppercase()}'
         """.trimIndent()
 
         val res = query(sql) {
@@ -176,7 +127,7 @@ class OracleDatabase(private val conn: Connection) : Database {
         return res.first()
     }
 
-    private fun isTableExistent(tableName: String) =
-        isObjectExistent(tableName, "table")
+    override fun isTableExistent(tableName: String): Boolean =
+        isObjectExistent("table", tableName)
 }
 

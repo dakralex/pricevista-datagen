@@ -51,8 +51,5 @@ class UpdateCommand(name: String = "update") :
 
         logger.info { "Parse input files..." }
         parser.parseEntries(files)
-
-        logger.info { "Commit parsed entries..." }
-        parser.commit(db)
     }
 }

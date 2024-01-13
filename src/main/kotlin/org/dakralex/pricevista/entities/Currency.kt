@@ -1,8 +1,6 @@
 package org.dakralex.pricevista.entities
 
-import org.dakralex.pricevista.contracts.database.Database
-import org.dakralex.pricevista.database.Entity
-import org.dakralex.pricevista.database.EntityComp
+import org.dakralex.pricevista.contracts.entities.Entity
 
 typealias CurrencyId = Int
 
@@ -28,29 +26,4 @@ data class Currency(
 
     /** English name of the currency **/
     val name: String
-) : Entity {
-    companion object : EntityComp<Currency> {
-        override val tableName: String = "Currency"
-        override val insertStatement: String = """
-                insert into $tableName (id, alpha3, scale, symbol, minor, name)
-                values (:id, :alpha3, :scale, :symbol, :minor, :name)
-            """.trimIndent()
-
-        override fun insertBatch(db: Database, entries: List<Currency>) {
-            db.updateBatch(insertStatement, entries.map { entry ->
-                arrayOf(
-                    entry.id,
-                    entry.alpha3,
-                    entry.scale,
-                    entry.symbol,
-                    entry.minor,
-                    entry.name
-                )
-            })
-        }
-    }
-
-    override fun insert(db: Database) {
-        db.update(insertStatement, id, alpha3, scale, symbol, minor, name)
-    }
-}
+) : Entity

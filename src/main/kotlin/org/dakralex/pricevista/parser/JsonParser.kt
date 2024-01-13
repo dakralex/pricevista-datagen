@@ -6,7 +6,6 @@ import com.aayushatharva.brotli4j.decoder.DecoderJNI
 import com.aayushatharva.brotli4j.decoder.DirectDecompress
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.dakralex.pricevista.QUANTITY_MATH_CONTEXT
-import org.dakralex.pricevista.contracts.database.Database
 import org.dakralex.pricevista.entities.*
 import org.dakralex.pricevista.entities.data.EArticleUnit
 import java.io.ByteArrayInputStream
@@ -94,7 +93,7 @@ abstract class JsonParser<T : JsonEntry> {
                 name = parseArticleName(entry, articleBrand),
                 description = parseLongDescription(entry),
                 originCountry = parseOriginCountry(entry),
-                unit = parseArticleUnit(entry),
+                articleUnit = parseArticleUnit(entry),
                 quantity = parseQuantity(entry),
                 weightable = parseIsWeightable(entry)
             )
@@ -148,30 +147,6 @@ abstract class JsonParser<T : JsonEntry> {
         inputStreamsTimestamped.map { inputStream ->
             parseEntries(inputStream.first, inputStream.second)
         }
-    }
-
-    fun commit(db: Database) {
-        logger.info { " " }
-        logger.info { " " }
-        logger.info { " " }
-        logger.info { " " }
-        logger.info { " " }
-
-        logger.info { "Commit parsed companies..." }
-        logger.debug { parsedCompanies }
-        Company.insertBatch(db, parsedCompanies)
-
-        logger.info { "Commit parsed brands..." }
-        Brand.insertBatch(db, parsedBrands)
-
-        logger.info { "Commit parsed articles..." }
-        Article.insertBatch(db, parsedArticles)
-
-        logger.info { "Commit parsed article images..." }
-        ArticleImage.insertBatch(db, parsedArticleImages)
-
-        logger.info { "Commit parsed store articles..." }
-        StoreArticle.insertBatch(db, parsedStoreArticles)
     }
 
     private fun decodeBrotliFile(it: File): ByteArrayInputStream {

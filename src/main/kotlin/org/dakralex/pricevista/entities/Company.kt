@@ -1,8 +1,6 @@
 package org.dakralex.pricevista.entities
 
-import org.dakralex.pricevista.contracts.database.Database
-import org.dakralex.pricevista.database.ResolvableEntity
-import org.dakralex.pricevista.database.ResolvableEntityComp
+import org.dakralex.pricevista.contracts.entities.Entity
 
 typealias CompanyId = Int
 
@@ -22,58 +20,4 @@ data class Company(
 
     /** Physical location of the company's headquarters **/
     var place: Place? = null
-) : ResolvableEntity {
-    companion object : ResolvableEntityComp<Company> {
-        override val tableName: String = "Company"
-        override val insertStatement: String = """
-                insert into $tableName (id, long_name, short_name, place_id)
-                values (:id, :longName, :shortName, :placeId)
-            """.trimIndent()
-        val insertNewStatement: String = """
-                insert into $tableName (long_name, short_name)
-                values (:longName, :shortName)
-            """.trimIndent()
-        override val selectStatement: String = """
-                select id from $tableName
-                    where short_name = :shortName
-            """.trimIndent()
-
-        override fun insertBatch(db: Database, entries: List<Company>) {
-            entries.forEach { it.resolveFrom(db) }
-
-            db.updateBatch(insertStatement, entries.map { entry ->
-                arrayOf(
-                    entry.id,
-                    entry.longName,
-                    entry.shortName,
-                    entry.place?.id
-                )
-            })
-        }
-    }
-
-    override fun resolveFrom(db: Database) {
-        id = db.query(
-            selectStatement,
-            shortName
-        ) {
-            it.getInt("id")
-        }.firstOrNull() ?: id
-    }
-
-    override fun insert(db: Database) {
-        if (id == null) {
-            resolveFrom(db)
-        }
-
-        if (id == null) {
-            db.update(insertNewStatement, longName, shortName)
-        } else {
-            db.update(insertStatement, id, longName, shortName, place?.id)
-        }
-    }
-
-    override fun toString(): String {
-        return "Company(id=$id, longName=$longName, shortName='$shortName', place=$place)"
-    }
-}
+) : Entity

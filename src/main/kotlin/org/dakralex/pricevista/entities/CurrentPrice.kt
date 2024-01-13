@@ -1,9 +1,9 @@
 package org.dakralex.pricevista.entities
 
-import org.dakralex.pricevista.contracts.database.Database
-import org.dakralex.pricevista.database.Entity
-import org.dakralex.pricevista.database.EntityComp
+import org.dakralex.pricevista.contracts.entities.Entity
 import java.util.*
+
+typealias CurrentPriceKey = Pair<Store, Article>
 
 /**
  * The [CurrentPrice] relation describes the current price of the articles at
@@ -24,23 +24,4 @@ data class CurrentPrice(
 
     /** Timestamp when the current price was updated at **/
     var updatedAt: Date,
-) : Entity {
-    companion object : EntityComp<CurrentPrice> {
-        override val tableName: String = "Current_Price"
-        override val insertStatement: String = """
-                insert into $tableName (store_id, article_id, value, changed_at, updated_at)
-                values (:storeId, :articleId, :value, :changedAt, :updatedAt)
-            """.trimIndent()
-    }
-
-    override fun insert(db: Database) {
-        db.update(
-            insertStatement,
-            store.id,
-            article.id,
-            value,
-            changedAt,
-            updatedAt
-        )
-    }
-}
+) : Entity
