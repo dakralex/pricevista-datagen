@@ -7,7 +7,7 @@ import com.github.ajalt.clikt.parameters.arguments.multiple
 import com.github.ajalt.clikt.parameters.groups.provideDelegate
 import com.github.ajalt.clikt.parameters.types.enum
 import com.github.ajalt.clikt.parameters.types.file
-import org.dakralex.pricevista.database.OracleDatabase
+import org.dakralex.pricevista.database.PriceVistaDatabase
 import org.dakralex.pricevista.entities.data.EStore
 import org.dakralex.pricevista.parser.billa.BillaJsonParser
 import org.dakralex.pricevista.parser.hofer.HoferJsonParser
@@ -35,9 +35,9 @@ class UpdateCommand(name: String = "update") :
         val repo = PriceVistaDatabase(db).init()
 
         val parser = when (store) {
-            EStore.BILLA -> BillaJsonParser
-            EStore.HOFER -> HoferJsonParser
-            EStore.SPAR -> SparJsonParser
+            EStore.BILLA -> BillaJsonParser(repo)
+            EStore.HOFER -> HoferJsonParser(repo)
+            EStore.SPAR -> SparJsonParser(repo)
         }
 
         parser.parseEntries(files)

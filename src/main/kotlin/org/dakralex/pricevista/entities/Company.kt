@@ -20,4 +20,10 @@ data class Company(
 
     /** Physical location of the company's headquarters **/
     var place: Place? = null
-) : Entity
+) : Entity {
+    companion object {
+        fun fromShortName(name: String): Company {
+            return Company(shortName = name)
+        }
+    }
+}

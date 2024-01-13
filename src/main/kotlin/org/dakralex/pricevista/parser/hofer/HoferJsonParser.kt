@@ -4,6 +4,7 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromStream
+import org.dakralex.pricevista.database.PriceVistaDatabase
 import org.dakralex.pricevista.entities.ArticleUnit
 import org.dakralex.pricevista.entities.data.EStore
 import org.dakralex.pricevista.parser.StoreJsonParser
@@ -12,11 +13,13 @@ import java.io.InputStream
 
 private val logger = KotlinLogging.logger {}
 
-object HoferJsonParser : StoreJsonParser<HoferJsonEntry>() {
+class HoferJsonParser(
+    repo: PriceVistaDatabase
+) : StoreJsonParser<HoferJsonEntry>(repo) {
     override val store = EStore.HOFER.store
 
     @OptIn(ExperimentalSerializationApi::class)
-    override fun decodeJsonFromInputStream(inputStream: InputStream): List<HoferJsonEntry> {
+    override fun decodeJsonFromInputStream(inputStream: InputStream): Sequence<HoferJsonEntry> {
         return inputStream.use { Json.decodeFromStream(it) }
     }
 

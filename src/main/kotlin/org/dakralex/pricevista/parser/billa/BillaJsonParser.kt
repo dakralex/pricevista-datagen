@@ -3,8 +3,9 @@ package org.dakralex.pricevista.parser.billa
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.decodeFromStream
+import kotlinx.serialization.json.decodeToSequence
 import org.dakralex.pricevista.QUANTITY_MATH_CONTEXT
+import org.dakralex.pricevista.database.PriceVistaDatabase
 import org.dakralex.pricevista.entities.ArticleUnit
 import org.dakralex.pricevista.entities.data.EStore
 import org.dakralex.pricevista.parser.StoreJsonParser
@@ -14,12 +15,14 @@ import java.math.BigDecimal
 
 private val logger = KotlinLogging.logger {}
 
-object BillaJsonParser : StoreJsonParser<BillaJsonEntry>() {
+class BillaJsonParser(
+    repo: PriceVistaDatabase
+) : StoreJsonParser<BillaJsonEntry>(repo) {
     override val store = EStore.BILLA.store
 
     @OptIn(ExperimentalSerializationApi::class)
-    override fun decodeJsonFromInputStream(inputStream: InputStream): List<BillaJsonEntry> {
-        return inputStream.use { Json.decodeFromStream(it) }
+    override fun decodeJsonFromInputStream(inputStream: InputStream): Sequence<BillaJsonEntry> {
+        return inputStream.use { Json.decodeToSequence(it) }
     }
 
     override fun parseInternalIdentifier(entry: BillaJsonEntry): String {
@@ -30,7 +33,7 @@ object BillaJsonParser : StoreJsonParser<BillaJsonEntry>() {
         val brand = entry.brand?.name
 
         if (brand.isNullOrBlank()) {
-            logger.warn { "Brand field for article '${entry.name}' is null" }
+//            logger.warn { "Brand field for article '${entry.name}' is null" }
         }
 
         return brand

@@ -6,6 +6,7 @@ import com.aayushatharva.brotli4j.decoder.DecoderJNI
 import com.aayushatharva.brotli4j.decoder.DirectDecompress
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.dakralex.pricevista.QUANTITY_MATH_CONTEXT
+import org.dakralex.pricevista.contracts.database.PriceVistaRepository
 import org.dakralex.pricevista.contracts.parser.JsonEntry
 import org.dakralex.pricevista.contracts.parser.JsonParser
 import org.dakralex.pricevista.entities.*
@@ -16,22 +17,22 @@ import java.io.InputStream
 import java.math.BigDecimal
 import java.util.*
 
-
 private val logger = KotlinLogging.logger {}
 
-abstract class StoreJsonParser<T : JsonEntry> : JsonParser {
+abstract class StoreJsonParser<T : JsonEntry>(
+    private val repo: PriceVistaRepository
+) : JsonParser {
     abstract val store: Store
 
     open val storeDefaultBrand: Brand? = null
 
-    private var parsedCompanies: List<Company> = mutableListOf()
-    private var parsedBrands: List<Brand> = mutableListOf()
-    private var parsedArticles: List<Article> = mutableListOf()
-    private var parsedArticleImages: List<ArticleImage> = mutableListOf()
-    private var parsedStoreArticles: List<StoreArticle> = mutableListOf()
+    val parsedCompanies = mutableListOf<Company>()
+    val parsedBrands = mutableListOf<Brand>()
+    val parsedArticles = mutableListOf<Article>()
+    val parsedArticleImages = mutableListOf<ArticleImage>()
+    val parsedStoreArticles = mutableListOf<StoreArticle>()
 
-
-    abstract fun decodeJsonFromInputStream(inputStream: InputStream): List<T>
+    abstract fun decodeJsonFromInputStream(inputStream: InputStream): Sequence<T>
 
 
     abstract fun parseInternalIdentifier(entry: T): String
@@ -72,57 +73,61 @@ abstract class StoreJsonParser<T : JsonEntry> : JsonParser {
         // TODO This should be doable with abstraction, but I got an unresolvable
         //      exception I couldn't fix, see kotlinx.serialization#2537
         val entries = decodeJsonFromInputStream(inputStream)
-        logger.info { "Parsed ${entries.size} entries." }
 
-        val brands = entries.mapNotNull { entry -> parseBrandName(entry) }
-            .distinctBy(String::lowercase)
-        parsedCompanies += brands.map { name -> Company(shortName = name) }
+        // TODO Make interface to addBrands transitive to addCompanies
+        val companies = mapCompaniesFromEntries(entries)
+        val companiesDao = repo.addCompanies(companies).commit()
+        val repoCompanies = companiesDao.list()
+        repo.addBrands(repoCompanies.map(Brand::fromCompany)).commit()
+        logger.info { "Parsed ${repoCompanies.count()} unique brands." }
 
-        parsedBrands += parsedCompanies.map { company -> Brand(company) }
-        logger.info { "Parsed ${parsedBrands.size} unique brands." }
+//        parsedArticles += entries.map { entry ->
+//            val articleBrand = parseArticleBrand(entry) ?: storeDefaultBrand
+//
+//            val article = Article(
+//                brand = articleBrand,
+//                name = parseArticleName(entry, articleBrand),
+//                description = parseLongDescription(entry),
+//                originCountry = parseOriginCountry(entry),
+//                articleUnit = parseArticleUnit(entry),
+//                quantity = parseQuantity(entry),
+//                weightable = parseIsWeightable(entry)
+//            )
+//
+//            val parsedImageUrls = parseImageUrls(entry)
+//            parsedArticleImages += parsedImageUrls.map { url ->
+//                ArticleImage(article, null, url)
+//            }
+//
+//            parsedStoreArticles += StoreArticle(
+//                store,
+//                parseInternalIdentifier(entry),
+//                article,
+//                date
+//            )
+//
+//            article
+//        }.distinctBy { article ->
+//            val brandName = article.brand?.company?.shortName
+//            val articleName = article.name
+//
+//            "$brandName$articleName".lowercase()
+//        }
+//        logger.info { "Parsed ${parsedArticles.size} unique articles." }
+//
+//        parsedArticleImages = parsedArticleImages.distinctBy {
+//            it.article.hashCode().toString() + it.imageUrl
+//        }
+//        logger.info { "Parsed ${parsedArticleImages.size} unique article images." }
+//
+//        parsedStoreArticles =
+//            parsedStoreArticles.distinctBy { it.storeArticleId }
+//        logger.info { "Parsed ${parsedStoreArticles.size} unique store articles." }
+    }
 
-        parsedArticles += entries.map { entry ->
-            val articleBrand = parseArticleBrand(entry) ?: storeDefaultBrand
-
-            val article = Article(
-                brand = articleBrand,
-                name = parseArticleName(entry, articleBrand),
-                description = parseLongDescription(entry),
-                originCountry = parseOriginCountry(entry),
-                articleUnit = parseArticleUnit(entry),
-                quantity = parseQuantity(entry),
-                weightable = parseIsWeightable(entry)
-            )
-
-            val parsedImageUrls = parseImageUrls(entry)
-            parsedArticleImages += parsedImageUrls.map { url ->
-                ArticleImage(article, null, url)
-            }
-
-            parsedStoreArticles += StoreArticle(
-                store,
-                parseInternalIdentifier(entry),
-                article,
-                date
-            )
-
-            article
-        }.distinctBy { article ->
-            val brandName = article.brand?.company?.shortName
-            val articleName = article.name
-
-            "$brandName$articleName".lowercase()
-        }
-        logger.info { "Parsed ${parsedArticles.size} unique articles." }
-
-        parsedArticleImages = parsedArticleImages.distinctBy {
-            it.article.hashCode().toString() + it.imageUrl
-        }
-        logger.info { "Parsed ${parsedArticleImages.size} unique article images." }
-
-        parsedStoreArticles =
-            parsedStoreArticles.distinctBy { it.storeArticleId }
-        logger.info { "Parsed ${parsedStoreArticles.size} unique store articles." }
+    private fun mapCompaniesFromEntries(entries: Sequence<T>): Sequence<Company> {
+        return entries.mapNotNull(::parseBrandName)
+            .distinctBy(String::lowercase).map(Company::fromShortName)
     }
 
     override fun parseEntry(file: File) {

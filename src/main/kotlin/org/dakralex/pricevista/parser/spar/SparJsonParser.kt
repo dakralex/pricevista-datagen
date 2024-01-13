@@ -5,6 +5,7 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromStream
 import org.dakralex.pricevista.QUANTITY_MATH_CONTEXT
+import org.dakralex.pricevista.database.PriceVistaDatabase
 import org.dakralex.pricevista.entities.ArticleUnit
 import org.dakralex.pricevista.entities.data.EStore
 import org.dakralex.pricevista.parser.StoreJsonParser
@@ -14,7 +15,9 @@ import java.math.BigDecimal
 
 private val logger = KotlinLogging.logger {}
 
-object SparJsonParser : StoreJsonParser<SparJsonEntry>() {
+class SparJsonParser(
+    repo: PriceVistaDatabase
+) : StoreJsonParser<SparJsonEntry>(repo) {
     override val store = EStore.SPAR.store
 
     private val decimalSepRegex = Regex(""",""")
@@ -23,7 +26,7 @@ object SparJsonParser : StoreJsonParser<SparJsonEntry>() {
     private val depositTypeRegex = Regex("""(einweg|mehrweg)""")
 
     @OptIn(ExperimentalSerializationApi::class)
-    override fun decodeJsonFromInputStream(inputStream: InputStream): List<SparJsonEntry> {
+    override fun decodeJsonFromInputStream(inputStream: InputStream): Sequence<SparJsonEntry> {
         return inputStream.use { Json.decodeFromStream(it) }
     }
 

@@ -14,4 +14,10 @@ data class Brand(
 
     /** URL address to a logo **/
     var logoUrl: String? = null
-) : Entity
+) : Entity {
+    companion object {
+        fun fromCompany(company: Company): Brand {
+            return Brand(company)
+        }
+    }
+}
