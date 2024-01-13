@@ -1,4 +1,4 @@
-package org.dakralex.pricevista.parser
+package org.dakralex.pricevista.parser.serializer
 
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.descriptors.PrimitiveKind
@@ -7,18 +7,18 @@ import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 
-object IntAsStringSerializer : KSerializer<Int> {
+object DoubleAsStringSerializer : KSerializer<Double> {
     override val descriptor: SerialDescriptor =
         PrimitiveSerialDescriptor(
             "kotlinx.serialization.DoubleAsStringSerializer",
             PrimitiveKind.STRING
         )
 
-    override fun serialize(encoder: Encoder, value: Int) {
+    override fun serialize(encoder: Encoder, value: Double) {
         encoder.encodeString(value.toString())
     }
 
-    override fun deserialize(decoder: Decoder): Int {
-        return decoder.decodeString().toInt()
+    override fun deserialize(decoder: Decoder): Double {
+        return decoder.decodeString().toDouble()
     }
 }
