@@ -4,6 +4,7 @@ import org.dakralex.pricevista.contracts.dao.*
 import org.dakralex.pricevista.contracts.database.Database
 import org.dakralex.pricevista.entities.Store
 import org.dakralex.pricevista.entities.StoreId
+import org.dakralex.pricevista.entities.data.EStore
 import java.sql.ResultSet
 
 class StoreTable(
@@ -24,6 +25,15 @@ class StoreTable(
             "language_id"
         )
     ) {
+    override fun initialize(): Boolean {
+        if (super.initialize()) {
+            addBatch(EStore.entries.asSequence().map(EStore::store))
+            return true
+        }
+
+        return false
+    }
+
     override fun isUnique(entity: Store): (Store) -> Boolean {
         return { e -> e.id == entity.id }
     }
