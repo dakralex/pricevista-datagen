@@ -7,6 +7,7 @@ import org.dakralex.pricevista.contracts.database.Database
 import org.dakralex.pricevista.entities.CurrentPrice
 import org.dakralex.pricevista.entities.CurrentPriceKey
 import java.sql.ResultSet
+import java.sql.Timestamp
 
 class CurrentPriceTable(
     db: Database,
@@ -38,8 +39,8 @@ class CurrentPriceTable(
             stores.findById(resultSet.getInt("store_id"))!!,
             articles.findById(resultSet.getInt("article_id"))!!,
             resultSet.getLong("value"),
-            resultSet.getTimestamp("changed_at"),
-            resultSet.getTimestamp("updated_at")
+            resultSet.getTimestamp("changed_at").toInstant(),
+            resultSet.getTimestamp("updated_at").toInstant()
         )
     }
 
@@ -48,8 +49,8 @@ class CurrentPriceTable(
             entry.store.id,
             entry.article.id,
             entry.value,
-            entry.changedAt,
-            entry.updatedAt
+            Timestamp.from(entry.changedAt),
+            Timestamp.from(entry.updatedAt)
         )
     }
 }

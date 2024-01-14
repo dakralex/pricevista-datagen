@@ -1,7 +1,7 @@
 package org.dakralex.pricevista.entities
 
 import org.dakralex.pricevista.contracts.entities.Entity
-import java.util.*
+import java.time.Instant
 
 typealias CurrentPriceKey = Pair<Store, Article>
 
@@ -20,8 +20,8 @@ data class CurrentPrice(
     var value: Long,
 
     /** Timestamp when the current price was changed at **/
-    var changedAt: Date,
+    var changedAt: Instant,
 
     /** Timestamp when the current price was updated at **/
-    var updatedAt: Date,
+    var updatedAt: Instant,
 ) : Entity

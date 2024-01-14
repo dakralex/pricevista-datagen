@@ -7,6 +7,7 @@ import org.dakralex.pricevista.contracts.database.Database
 import org.dakralex.pricevista.entities.RecordedPrice
 import org.dakralex.pricevista.entities.RecordedPriceKey
 import java.sql.ResultSet
+import java.sql.Timestamp
 
 class RecordedPriceTable(
     db: Database,
@@ -43,7 +44,7 @@ class RecordedPriceTable(
         return RecordedPrice(
             stores.findById(resultSet.getInt("store_id"))!!,
             articles.findById(resultSet.getInt("article_id"))!!,
-            resultSet.getTimestamp("changed_at"),
+            resultSet.getTimestamp("changed_at").toInstant(),
             resultSet.getLong("value")
         )
     }
@@ -52,7 +53,7 @@ class RecordedPriceTable(
         return arrayOf(
             entry.store.id,
             entry.article.id,
-            entry.changedAt,
+            Timestamp.from(entry.changedAt),
             entry.value
         )
     }

@@ -1,9 +1,9 @@
 package org.dakralex.pricevista.entities
 
 import org.dakralex.pricevista.contracts.entities.Entity
-import java.util.*
+import java.time.Instant
 
-typealias RecordedPriceKey = Triple<Store, Article, Date>
+typealias RecordedPriceKey = Triple<Store, Article, Instant>
 
 /**
  * The [RecordedPrice] relation describes the historical prices of articles
@@ -17,7 +17,7 @@ data class RecordedPrice(
     val article: Article,
 
     /** Timestamp when the price was recorded **/
-    val changedAt: Date,
+    val changedAt: Instant,
 
     /** Value of the recorded price in the store's currency's minor unit **/
     var value: Long,

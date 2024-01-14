@@ -7,6 +7,7 @@ import org.dakralex.pricevista.contracts.database.Database
 import org.dakralex.pricevista.entities.StoreArticle
 import org.dakralex.pricevista.entities.StoreArticleKey
 import java.sql.ResultSet
+import java.sql.Timestamp
 
 class StoreArticleTable(
     db: Database,
@@ -40,7 +41,7 @@ class StoreArticleTable(
             stores.findById(resultSet.getInt("store_id"))!!,
             resultSet.getString("store_article_id"),
             articles.findById(resultSet.getInt("article_id"))!!,
-            resultSet.getTimestamp("since")
+            resultSet.getTimestamp("since").toInstant()
         )
     }
 
@@ -49,7 +50,7 @@ class StoreArticleTable(
             entry.store.id,
             entry.storeArticleId,
             entry.article.id,
-            entry.since
+            Timestamp.from(entry.since)
         )
     }
 }

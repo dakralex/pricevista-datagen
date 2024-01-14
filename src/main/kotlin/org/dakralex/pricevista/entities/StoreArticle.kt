@@ -1,7 +1,7 @@
 package org.dakralex.pricevista.entities
 
 import org.dakralex.pricevista.contracts.entities.Entity
-import java.util.*
+import java.time.Instant
 
 typealias StoreArticleId = String
 typealias StoreArticleKey = Pair<Store, StoreArticleId>
@@ -21,5 +21,5 @@ data class StoreArticle(
     var article: Article,
 
     /** Timestamp when the article was first discovered **/
-    val since: Date
+    val since: Instant
 ) : Entity
