@@ -1,0 +1,1 @@
+drop trigger update_price_history_trigger

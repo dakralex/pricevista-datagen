@@ -1,0 +1,1 @@
+drop procedure update_price_history_proc

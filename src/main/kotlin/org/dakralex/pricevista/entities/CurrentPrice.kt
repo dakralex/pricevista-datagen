@@ -17,11 +17,29 @@ data class CurrentPrice(
     val article: Article,
 
     /** Value of the current price in the store's currency's minor unit **/
-    var value: Long,
+    var price: Long,
 
     /** Timestamp when the current price was changed at **/
     var changedAt: Instant,
 
     /** Timestamp when the current price was updated at **/
-    var updatedAt: Instant,
-) : Entity
+    var updatedAt: Instant = Instant.now(),
+) : Entity {
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as CurrentPrice
+
+        if (store != other.store) return false
+        if (article != other.article) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = store.hashCode()
+        result = 31 * result + article.hashCode()
+        return result
+    }
+}

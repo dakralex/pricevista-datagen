@@ -20,5 +20,5 @@ data class RecordedPrice(
     val changedAt: Instant,
 
     /** Value of the recorded price in the store's currency's minor unit **/
-    var value: Long,
+    var price: Long,
 ) : Entity
