@@ -22,4 +22,23 @@ data class StoreArticle(
 
     /** Timestamp when the article was first discovered **/
     val since: Instant
-) : Entity
+) : Entity {
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as StoreArticle
+
+        if (store != other.store) return false
+        if (storeArticleId != other.storeArticleId) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = store.hashCode()
+        result = 31 * result + storeArticleId.hashCode()
+        return result
+    }
+}

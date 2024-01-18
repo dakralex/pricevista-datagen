@@ -26,4 +26,19 @@ data class Store(
 
     /** Language of the store **/
     var language: Language
-) : Entity
+) : Entity {
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as Store
+
+        // TODO This is safe for now as all stores are hardcoded
+        return id == other.id
+    }
+
+    override fun hashCode(): Int {
+        return id ?: 0
+    }
+}

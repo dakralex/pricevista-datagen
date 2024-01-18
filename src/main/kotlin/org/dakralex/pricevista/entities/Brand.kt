@@ -15,9 +15,23 @@ data class Brand(
     /** URL address to a logo **/
     var logoUrl: String? = null
 ) : Entity {
+
     companion object {
         fun fromCompany(company: Company): Brand {
             return Brand(company)
         }
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as Brand
+
+        return company == other.company
+    }
+
+    override fun hashCode(): Int {
+        return company.hashCode()
     }
 }

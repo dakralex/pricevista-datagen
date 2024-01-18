@@ -21,9 +21,23 @@ data class Company(
     /** Physical location of the company's headquarters **/
     var place: Place? = null
 ) : Entity {
+
     companion object {
         fun fromShortName(name: String): Company {
             return Company(shortName = name)
         }
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as Company
+
+        return shortName.equals(other.shortName, true)
+    }
+
+    override fun hashCode(): Int {
+        return shortName.lowercase().hashCode()
     }
 }
