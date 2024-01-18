@@ -30,10 +30,6 @@ class CountryTable(
         return false
     }
 
-    override fun isUnique(entity: Country): (Country) -> Boolean {
-        return { e -> e.id == entity.id }
-    }
-
     override fun matchesWithId(id: CountryId): (Country) -> Boolean {
         return { e -> e.id == id }
     }

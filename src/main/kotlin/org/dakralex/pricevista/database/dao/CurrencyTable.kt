@@ -32,10 +32,6 @@ class CurrencyTable(
         return false
     }
 
-    override fun isUnique(entity: Currency): (Currency) -> Boolean {
-        return { e -> e.id == entity.id }
-    }
-
     override fun matchesWithId(id: CurrencyId): (Currency) -> Boolean {
         return { e -> e.id == id }
     }

@@ -21,16 +21,9 @@ class RecordedPriceTable(
             "store_id",
             "article_id",
             "changed_at",
-            "value"
+            "price"
         )
     ) {
-    override fun isUnique(entity: RecordedPrice): (RecordedPrice) -> Boolean {
-        val key =
-            RecordedPriceKey(entity.store, entity.article, entity.changedAt)
-        val matchesId = matchesWithId(key)
-
-        return { e -> matchesId(e) }
-    }
 
     override fun matchesWithId(id: RecordedPriceKey): (RecordedPrice) -> Boolean {
         return { e ->
@@ -45,7 +38,7 @@ class RecordedPriceTable(
             stores.findById(resultSet.getInt("store_id"))!!,
             articles.findById(resultSet.getInt("article_id"))!!,
             resultSet.getTimestamp("changed_at").toInstant(),
-            resultSet.getLong("value")
+            resultSet.getLong("price")
         )
     }
 
@@ -54,7 +47,7 @@ class RecordedPriceTable(
             entry.store.id,
             entry.article.id,
             Timestamp.from(entry.changedAt),
-            entry.value
+            entry.price
         )
     }
 }

@@ -29,10 +29,6 @@ class RetailerTable(
         return false
     }
 
-    override fun isUnique(entity: Retailer): (Retailer) -> Boolean {
-        return { e -> e.company.id == entity.company.id }
-    }
-
     override fun matchesWithId(id: RetailerId): (Retailer) -> Boolean {
         return { e -> e.company.id == id }
     }

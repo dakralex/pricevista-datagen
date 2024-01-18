@@ -20,14 +20,39 @@ class CurrentPriceTable(
         sequenceOf(
             "store_id",
             "article_id",
-            "value",
+            "price",
             "changed_at",
             "updated_at"
         )
     ) {
-    override fun isUnique(entity: CurrentPrice): (CurrentPrice) -> Boolean {
-        // TODO Make the CurrentPrice transitive when no id was given
-        return { e -> e.store.id == entity.store.id && e.article.id == entity.article.id }
+    override val insertFullStmt = """
+        merge into Current_Price target
+            using ( select :storeId   as store_id,
+                           :articleId as article_id,
+                           :price     as price,
+                           :changedAt as changed_at,
+                           :updatedAt as updated_at
+                    from dual ) source
+            on (target.store_id = source.store_id and
+                target.article_id = source.article_id)
+            when matched then
+                update
+                set price      = source.price,
+                    changed_at = source.changed_at,
+                    updated_at = source.updated_at
+                where target.price <> source.price
+            when not matched then
+                insert
+                values (source.store_id, source.article_id, source.price,
+                        source.changed_at, source.updated_at)
+    """.trimIndent()
+
+    override fun initialize(): Boolean {
+        if (isNotExistent) {
+            return createTable()
+        }
+
+        return false
     }
 
     override fun matchesWithId(id: CurrentPriceKey): (CurrentPrice) -> Boolean {
@@ -38,7 +63,7 @@ class CurrentPriceTable(
         return CurrentPrice(
             stores.findById(resultSet.getInt("store_id"))!!,
             articles.findById(resultSet.getInt("article_id"))!!,
-            resultSet.getLong("value"),
+            resultSet.getLong("price"),
             resultSet.getTimestamp("changed_at").toInstant(),
             resultSet.getTimestamp("updated_at").toInstant()
         )
@@ -48,7 +73,7 @@ class CurrentPriceTable(
         return arrayOf(
             entry.store.id,
             entry.article.id,
-            entry.value,
+            entry.price,
             Timestamp.from(entry.changedAt),
             Timestamp.from(entry.updatedAt)
         )

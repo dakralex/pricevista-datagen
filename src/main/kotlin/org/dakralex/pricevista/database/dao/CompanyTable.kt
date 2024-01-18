@@ -32,14 +32,6 @@ class CompanyTable(
         return false
     }
 
-    override fun isUnique(entity: Company): (Company) -> Boolean {
-        return if (entity.id == null) { e ->
-            e.shortName == entity.shortName
-        } else { e ->
-            e.id == entity.id
-        }
-    }
-
     override fun matchesWithId(id: CompanyId): (Company) -> Boolean {
         return { e -> e.id == id }
     }

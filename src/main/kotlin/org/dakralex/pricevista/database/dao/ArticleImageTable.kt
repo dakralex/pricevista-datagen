@@ -20,13 +20,6 @@ class ArticleImageTable(
             "image_url"
         )
     ) {
-    override fun isUnique(entity: ArticleImage): (ArticleImage) -> Boolean {
-        return if (entity.id == null) { e ->
-            e.article.id == entity.article.id && e.imageUrl == entity.imageUrl
-        } else { e ->
-            e.article.id == entity.article.id && e.id == entity.id
-        }
-    }
 
     override fun matchesWithId(id: ArticleImageKey): (ArticleImage) -> Boolean {
         return { e -> e.article.id == id.first.id && e.id == id.second }

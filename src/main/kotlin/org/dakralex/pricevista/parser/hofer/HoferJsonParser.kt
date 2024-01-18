@@ -3,13 +3,15 @@ package org.dakralex.pricevista.parser.hofer
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.decodeFromStream
+import kotlinx.serialization.json.decodeToSequence
+import org.dakralex.pricevista.PRICE_MATH_CONTEXT
 import org.dakralex.pricevista.database.PriceVistaDatabase
 import org.dakralex.pricevista.entities.ArticleUnit
 import org.dakralex.pricevista.entities.data.EStore
 import org.dakralex.pricevista.parser.StoreJsonParser
 import org.dakralex.pricevista.parser.guessArticleUnit
 import java.io.InputStream
+import java.math.BigDecimal
 
 private val logger = KotlinLogging.logger {}
 
@@ -20,7 +22,7 @@ class HoferJsonParser(
 
     @OptIn(ExperimentalSerializationApi::class)
     override fun decodeJsonFromInputStream(inputStream: InputStream): Sequence<HoferJsonEntry> {
-        return inputStream.use { Json.decodeFromStream(it) }
+        return inputStream.use { Json.decodeToSequence(it) }
     }
 
     override fun parseInternalIdentifier(entry: HoferJsonEntry): String {
@@ -32,18 +34,19 @@ class HoferJsonParser(
         val brand = entry.brand
 
         if (brand.isNullOrBlank()) {
-            logger.warn { "Brand field for article '${entry.productName}' is null" }
+            logger.debug { "Brand field for article '${entry.productName}' is null" }
         }
 
         return brand
     }
 
     override fun parseArticleFullName(entry: HoferJsonEntry): String {
-        return entry.productName
+        return escapeArticleString(entry.productName)
     }
 
-    override fun parseLongDescription(entry: HoferJsonEntry): String {
-        return entry.description
+    override fun parseLongDescription(entry: HoferJsonEntry): String? {
+        // TODO The descriptions must be escaped, please reimplement later
+        return null
     }
 
     override fun parseArticleUnit(entry: HoferJsonEntry): ArticleUnit {
@@ -59,5 +62,11 @@ class HoferJsonParser(
 
     override fun parseImageUrls(entry: HoferJsonEntry): List<String> {
         return listOf(entry.mediaUrlLarge)
+    }
+
+    override fun parseArticlePrice(entry: HoferJsonEntry): Long {
+        // TODO Do retrieve the number of decimals from store currency
+        return BigDecimal(entry.price, PRICE_MATH_CONTEXT).scaleByPowerOfTen(2)
+            .toLong()
     }
 }

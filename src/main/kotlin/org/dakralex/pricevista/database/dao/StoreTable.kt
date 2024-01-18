@@ -34,10 +34,6 @@ class StoreTable(
         return false
     }
 
-    override fun isUnique(entity: Store): (Store) -> Boolean {
-        return { e -> e.id == entity.id }
-    }
-
     override fun matchesWithId(id: StoreId): (Store) -> Boolean {
         return { e -> e.id == id }
     }

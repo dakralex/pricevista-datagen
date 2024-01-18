@@ -19,13 +19,6 @@ class CompanyParticipationTable(
             "company_id"
         )
     ) {
-    override fun isUnique(entity: CompanyParticipation): (CompanyParticipation) -> Boolean {
-        // TODO Make the CompanyParticipation transitive when no id was given
-        return { e ->
-            e.stakeholder.id == entity.stakeholder.id
-                    && e.company.id == entity.company.id
-        }
-    }
 
     override fun matchesWithId(id: CompanyParticipationKey): (CompanyParticipation) -> Boolean {
         return { e -> e.stakeholder.id == id.first.id && e.company.id == id.second.id }

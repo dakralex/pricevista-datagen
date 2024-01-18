@@ -30,10 +30,6 @@ class LanguageTable(
         return false
     }
 
-    override fun isUnique(entity: Language): (Language) -> Boolean {
-        return { e -> e.id == entity.id }
-    }
-
     override fun matchesWithId(id: LanguageId): (Language) -> Boolean {
         return { e -> e.id == id }
     }

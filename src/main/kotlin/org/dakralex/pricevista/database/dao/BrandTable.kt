@@ -19,14 +19,6 @@ class BrandTable(
             "logo_url"
         )
     ) {
-    override fun isUnique(entity: Brand): (Brand) -> Boolean {
-        return if (entity.company.id == null) { e ->
-            e.company.longName == entity.company.longName
-                    && e.company.shortName == entity.company.shortName
-        } else { e ->
-            e.company.id == entity.company.id
-        }
-    }
 
     override fun matchesWithId(id: BrandId): (Brand) -> Boolean {
         return { e -> e.company.id == id }
@@ -44,5 +36,12 @@ class BrandTable(
             entry.company.id,
             entry.logoUrl
         )
+    }
+
+    override fun findByShortName(shortName: String): Brand? {
+        val entityWithName = { e: Brand -> e.company.shortName == shortName }
+
+        return cleanEntries.find(entityWithName)
+            ?: newEntries.find(entityWithName)
     }
 }

@@ -24,13 +24,6 @@ class StoreArticleTable(
             "since"
         )
     ) {
-    override fun isUnique(entity: StoreArticle): (StoreArticle) -> Boolean {
-        return { e ->
-            e.store.id == entity.store.id
-                    && e.storeArticleId == entity.storeArticleId
-                    && e.article.id == entity.article.id
-        }
-    }
 
     override fun matchesWithId(id: StoreArticleKey): (StoreArticle) -> Boolean {
         return { e -> e.store == id.first && e.storeArticleId == id.second }

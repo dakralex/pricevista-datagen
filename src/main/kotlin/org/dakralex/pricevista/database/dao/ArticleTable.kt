@@ -7,7 +7,10 @@ import org.dakralex.pricevista.contracts.dao.CountryDao
 import org.dakralex.pricevista.contracts.database.Database
 import org.dakralex.pricevista.entities.Article
 import org.dakralex.pricevista.entities.ArticleId
+import org.dakralex.pricevista.entities.ArticleUnit
+import org.dakralex.pricevista.entities.Brand
 import java.sql.ResultSet
+import kotlin.math.abs
 
 class ArticleTable(
     db: Database,
@@ -29,16 +32,6 @@ class ArticleTable(
             "weightable"
         )
     ) {
-    override fun isUnique(entity: Article): (Article) -> Boolean {
-        return if (entity.id == null) { e ->
-            e.brand == entity.brand
-                    && e.name == entity.name
-                    && e.articleUnit == entity.articleUnit
-                    && e.quantity == entity.quantity
-        } else { e ->
-            e.id == entity.id
-        }
-    }
 
     override fun matchesWithId(id: ArticleId): (Article) -> Boolean {
         return { e -> e.id == id }
@@ -52,7 +45,7 @@ class ArticleTable(
             resultSet.getString("description"),
             countries.findById(resultSet.getInt("origin_country_id")),
             articleUnits.findById(resultSet.getInt("article_unit_id"))!!,
-            resultSet.getBigDecimal("quantity"),
+            resultSet.getDouble("quantity"),
             resultSet.getInt("weightable") == 1
         )
     }
@@ -68,5 +61,21 @@ class ArticleTable(
             entry.quantity,
             entry.weightable
         )
+    }
+
+    override fun findByProps(
+        brand: Brand?,
+        name: String,
+        articleUnit: ArticleUnit,
+        quantity: Double
+    ): Article? {
+        val entityWithProps = { e: Article ->
+            e.name.equals(name, true)
+                    && e.brand == brand
+                    && e.articleUnit.id == articleUnit.id
+                    && abs(e.quantity - quantity) <= Article.QUANTITY_EPSILON
+        }
+
+        return list().firstOrNull(entityWithProps)
     }
 }

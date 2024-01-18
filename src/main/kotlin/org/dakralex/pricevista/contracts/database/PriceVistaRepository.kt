@@ -13,5 +13,5 @@ interface PriceVistaRepository {
     fun addArticles(entries: Sequence<Article>): ArticleDao
     fun addArticleImages(entries: Sequence<ArticleImage>): ArticleImageDao
     fun addStoreArticles(entries: Sequence<StoreArticle>): StoreArticleDao
-    fun addRecordedPrices(entries: Sequence<RecordedPrice>): RecordedPriceDao
+    fun addCurrentPrices(entries: Sequence<CurrentPrice>): CurrentPriceDao
 }

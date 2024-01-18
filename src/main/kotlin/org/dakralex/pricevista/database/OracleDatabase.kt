@@ -60,11 +60,7 @@ class OracleDatabase(private val conn: Connection) : Database {
         mapper: ResultSetMapper<T>
     ): List<T> {
         return conn.prepareStatement(sql).use { ps ->
-            params.withIndex().forEach { (i, param) ->
-                val index = i + 1
-
-                ps.setObject(index, param)
-            }
+            setPsParams(ps, params)
 
             ps.executeQuery().use { s ->
                 val result = mutableListOf<T>()
@@ -80,11 +76,7 @@ class OracleDatabase(private val conn: Connection) : Database {
 
     override fun update(sql: String, vararg params: Any?): Int {
         return conn.prepareStatement(sql).use { ps ->
-            params.withIndex().forEach { (i, param) ->
-                val index = i + 1
-
-                ps.setObject(index, param)
-            }
+            setPsParams(ps, params)
 
             ps.executeUpdate()
         }
@@ -96,11 +88,7 @@ class OracleDatabase(private val conn: Connection) : Database {
     ): IntArray {
         return conn.prepareStatement(sql).use { ps ->
             paramsList.forEach { params ->
-                params.withIndex().forEach { (i, param) ->
-                    val index = i + 1
-
-                    ps.setObject(index, param)
-                }
+                setPsParams(ps, params)
 
                 ps.addBatch()
             }
@@ -111,8 +99,30 @@ class OracleDatabase(private val conn: Connection) : Database {
                 val updateCount = e.updateCounts.sum()
                 val probableItem = paramsList[updateCount].joinToString(", ")
 
-                logger.error { "Could not fully execute batch update (update count: $updateCount)" }
+                logger.error { "Could not fully execute batch update (error at update number: $updateCount)" }
                 logger.error { "Probable erroneous item values: ($probableItem)" }
+                throw e
+            }
+        }
+    }
+
+    private fun setPsParams(
+        ps: PreparedStatement,
+        params: Array<out Any?>
+    ) {
+        params.withIndex().forEach { (i, param) ->
+            val index = i + 1
+
+            try {
+                when (param) {
+                    is String -> ps.setString(index, param)
+                    is Int -> ps.setInt(index, param)
+                    is Double -> ps.setDouble(index, param)
+                    is Boolean -> ps.setBoolean(index, param)
+                    else -> ps.setObject(index, param)
+                }
+            } catch (e: SQLException) {
+                logger.error { "Could not set object (index: $index, value: $param)" }
                 throw e
             }
         }

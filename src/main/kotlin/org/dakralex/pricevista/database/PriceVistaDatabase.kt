@@ -44,8 +44,8 @@ class PriceVistaDatabase(val db: Database) : PriceVistaRepository {
 
         stores.initialize()
         storeArticles.initialize()
-        currentPrices.initialize()
         recordedPrices.initialize()
+        currentPrices.initialize()
 
         return this
     }
@@ -67,15 +67,15 @@ class PriceVistaDatabase(val db: Database) : PriceVistaRepository {
 
         stores.commit()
         storeArticles.commit()
-        currentPrices.commit()
         recordedPrices.commit()
+        currentPrices.commit()
 
         return this
     }
 
     override fun drop(): PriceVistaDatabase {
-        recordedPrices.dropTable()
         currentPrices.dropTable()
+        recordedPrices.dropTable()
         storeArticles.dropTable()
         stores.dropTable()
 
@@ -126,9 +126,9 @@ class PriceVistaDatabase(val db: Database) : PriceVistaRepository {
         return storeArticles
     }
 
-    override fun addRecordedPrices(entries: Sequence<RecordedPrice>): RecordedPriceDao {
-        recordedPrices.addBatch(entries)
+    override fun addCurrentPrices(entries: Sequence<CurrentPrice>): CurrentPriceDao {
+        currentPrices.addBatch(entries)
 
-        return recordedPrices
+        return currentPrices
     }
 }

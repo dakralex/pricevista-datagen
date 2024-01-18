@@ -153,13 +153,13 @@ data class HoferJsonEntry(
     /** TODO Find out what the number means (seems to be values between 5 and 100 in step size 5) **/
     val providerOrderNumber: Int,
 
-    /** Seems to always be null **/
-    val rokshDiscountBasketValue: String? = null,
+    /** TODO Find out what this value means (see 2024-01-02 export) **/
+    val rokshDiscountBasketValue: Int? = null,
 
-    /** Seems to always be null **/
-    val rokshDiscountLevel: String? = null,
+    /** TODO Find out what this value means (see 2024-01-02 export) **/
+    val rokshDiscountLevel: Int? = null,
 
-    /** Seems to always be null **/
+    /** TODO Find out what this value means (see 2024-01-02 export) **/
     val rokshDiscountPrice: Double? = null,
 
     /** Seems to always be null **/

@@ -34,18 +34,6 @@ class PlaceTable(
         return false
     }
 
-    override fun isUnique(entity: Place): (Place) -> Boolean {
-        return if (entity.id == null) { e ->
-            e.country == entity.country
-                    && e.adminArea == entity.adminArea
-                    && e.locality == entity.locality
-                    && e.postalCode == entity.postalCode
-                    && e.streetAddress == entity.streetAddress
-        } else { e ->
-            e.id == entity.id
-        }
-    }
-
     override fun matchesWithId(id: PlaceId): (Place) -> Boolean {
         return { e -> e.id == id }
     }

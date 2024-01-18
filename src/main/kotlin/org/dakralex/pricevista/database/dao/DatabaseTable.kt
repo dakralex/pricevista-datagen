@@ -9,6 +9,7 @@ import org.dakralex.pricevista.database.sql.SelectStatement
 import java.io.BufferedReader
 import java.io.FileNotFoundException
 import java.sql.ResultSet
+import java.sql.SQLException
 
 private val logger = KotlinLogging.logger {}
 
@@ -17,9 +18,9 @@ sealed class DatabaseTable<E : Entity, N : Any>(
     private val tableName: String,
     attributes: Sequence<String>
 ) : EntityDao<E, N> {
-    private val selectAllStmt: String =
+    protected open val selectAllStmt: String =
         SelectStatement(tableName, attributes).toString()
-    private val insertFullStmt: String =
+    protected open val insertFullStmt: String =
         InsertStatement(tableName, attributes).toString()
 
     private val ddlPath =
@@ -27,10 +28,10 @@ sealed class DatabaseTable<E : Entity, N : Any>(
     private val dropPath =
         "migrations/v1/drop/drop_${tableName.lowercase()}.sql"
 
-    private val isNotExistent = !db.isTableExistent(tableName)
+    protected val isNotExistent = !db.isTableExistent(tableName)
 
-    private val cleanEntries = mutableSetOf<E>()
-    private val newEntries = mutableSetOf<E>()
+    protected val cleanEntries = mutableSetOf<E>()
+    protected val newEntries = mutableSetOf<E>()
 
     private fun initializeWithTableEntries() {
         cleanEntries += db.query(selectAllStmt, mapper = ::mapFromResultSet)
@@ -45,8 +46,6 @@ sealed class DatabaseTable<E : Entity, N : Any>(
         return false
     }
 
-    protected abstract fun isUnique(entity: E): (E) -> Boolean
-
     protected abstract fun matchesWithId(id: N): (E) -> Boolean
 
     protected abstract fun mapFromResultSet(resultSet: ResultSet): E
@@ -54,34 +53,31 @@ sealed class DatabaseTable<E : Entity, N : Any>(
     protected abstract fun mapToPropArray(entry: E): Array<Any?>
 
     override fun add(entity: E): Boolean {
-        val isEntityUnique = isUnique(entity)
-
-        return cleanEntries.any(isEntityUnique)
-                || newEntries.any(isEntityUnique)
-                || newEntries.add(entity)
+        return newEntries.add(entity)
     }
 
-    final override fun addBatch(entities: Sequence<E>) {
-        entities.forEach(::add)
+    override fun addBatch(entities: Sequence<E>) {
+        newEntries.addAll(entities)
     }
 
     override fun findById(id: N): E? {
         val entityWithId = matchesWithId(id)
 
-        return cleanEntries.find(entityWithId)
-            ?: newEntries.find(entityWithId)
+        return newEntries.find(entityWithId)
+            ?: cleanEntries.find(entityWithId)
     }
 
     override fun commit(): EntityDao<E, N> {
-        val newCount = newEntries.size
+        val commitEntries = newEntries.subtract(cleanEntries)
+        val commitCount = commitEntries.size
 
-        if (newCount == 0) {
+        if (commitCount == 0) {
             return this
         }
 
-        val propArrays = newEntries.map(::mapToPropArray)
+        val propArrays = commitEntries.map(::mapToPropArray)
 
-        logger.info { "$tableName: Committing $newCount entries..." }
+        logger.info { "$tableName: Committing $commitCount entries..." }
 
         val updateCount = db.updateBatch(insertFullStmt, propArrays).sum()
 
@@ -90,8 +86,8 @@ sealed class DatabaseTable<E : Entity, N : Any>(
         newEntries.clear()
         initializeWithTableEntries()
 
-        if (updateCount != newCount) {
-            logger.warn { "$tableName: Committed $newCount entries, but only $updateCount rows were updated." }
+        if (updateCount != commitCount) {
+            logger.warn { "$tableName: Committed $commitCount entries, but only $updateCount rows were updated." }
         }
 
         return this
@@ -104,45 +100,51 @@ sealed class DatabaseTable<E : Entity, N : Any>(
         }
     }
 
-    private fun createTable(): Boolean {
-        return runStatement("create", ddlPath)
+    protected open fun createTable(): Boolean {
+        return if (db.isTableExistent(tableName)) {
+            logger.warn { "$tableName is already existent, skip create." }
+            false
+        } else {
+            runStatement("create", ddlPath, "table")
+            true
+        }
     }
 
-    fun dropTable(): Boolean {
-        return runStatement("drop", dropPath)
+    open fun dropTable(): Boolean {
+        return if (db.isTableExistent(tableName)) {
+            runStatement("drop", dropPath, "table")
+            true
+        } else {
+            logger.warn { "$tableName does not exist existent, skip drop." }
+            false
+        }
     }
 
-    private fun runStatement(action: String, path: String): Boolean {
+    private fun runStatement(
+        action: String,
+        path: String,
+        type: String,
+        name: String = tableName
+    ): Boolean {
         val stmt = this::class.java.classLoader
             .getResourceAsStream(path)?.use { stream ->
                 stream.bufferedReader().use(BufferedReader::readText)
             }
 
         if (stmt == null) {
-            throw FileNotFoundException("SQL script could not be found for table $tableName.")
-        }
-
-        when (action) {
-            "create" -> {
-                if (db.isTableExistent(tableName)) {
-                    logger.warn { "$tableName is already existent, skip $action." }
-                    return false
-                }
-            }
-
-            else -> {
-                if (!db.isTableExistent(tableName)) {
-                    logger.warn { "$tableName is not existent, skip $action." }
-                    return false
-                }
-            }
+            throw FileNotFoundException("SQL script could not be found for $type $name.")
         }
 
         val actionVerb = action.replaceFirstChar(Char::uppercase)
-        logger.info { "$actionVerb $tableName table..." }
+        logger.info { "$actionVerb $name $type..." }
 
-        // Should be false, as the CREATE clause should not result in anything
-        return !db.execute(stmt)
+        try {
+            // Should be false, as the CREATE/DROP clause should not result in anything
+            return !db.execute(stmt)
+        } catch (e: SQLException) {
+            logger.warn { "Could not $action $name $type." }
+            return false
+        }
     }
 }
 

@@ -4,14 +4,12 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeToSequence
-import org.dakralex.pricevista.QUANTITY_MATH_CONTEXT
 import org.dakralex.pricevista.database.PriceVistaDatabase
 import org.dakralex.pricevista.entities.ArticleUnit
 import org.dakralex.pricevista.entities.data.EStore
 import org.dakralex.pricevista.parser.StoreJsonParser
 import org.dakralex.pricevista.parser.guessArticleUnit
 import java.io.InputStream
-import java.math.BigDecimal
 
 private val logger = KotlinLogging.logger {}
 
@@ -33,19 +31,19 @@ class BillaJsonParser(
         val brand = entry.brand?.name
 
         if (brand.isNullOrBlank()) {
-//            logger.warn { "Brand field for article '${entry.name}' is null" }
+            logger.debug { "Brand field for article '${entry.name}' is null" }
         }
 
         return brand
     }
 
     override fun parseArticleFullName(entry: BillaJsonEntry): String {
-        return entry.name
+        return escapeArticleString(entry.name)
     }
 
     override fun parseLongDescription(entry: BillaJsonEntry): String? {
-        return entry.descriptionLong
-            ?: entry.descriptionShort
+        // TODO The descriptions must be escaped, please reimplement later
+        return null
     }
 
     override fun parseArticleUnit(entry: BillaJsonEntry): ArticleUnit {
@@ -56,8 +54,8 @@ class BillaJsonParser(
             ?: super.parseArticleUnit(entry)
     }
 
-    override fun parseQuantity(entry: BillaJsonEntry): BigDecimal {
-        return BigDecimal(entry.amount, QUANTITY_MATH_CONTEXT)
+    override fun parseQuantity(entry: BillaJsonEntry): Double {
+        return entry.amount
     }
 
     override fun parseIsWeightable(entry: BillaJsonEntry): Boolean {
@@ -66,5 +64,9 @@ class BillaJsonParser(
 
     override fun parseImageUrls(entry: BillaJsonEntry): List<String> {
         return entry.images
+    }
+
+    override fun parseArticlePrice(entry: BillaJsonEntry): Long {
+        return entry.price.regular.value
     }
 }

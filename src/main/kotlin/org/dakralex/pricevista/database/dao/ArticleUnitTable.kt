@@ -30,10 +30,6 @@ class ArticleUnitTable(
         return false
     }
 
-    override fun isUnique(entity: ArticleUnit): (ArticleUnit) -> Boolean {
-        return { e -> e.id == entity.id }
-    }
-
     override fun matchesWithId(id: ArticleUnitId): (ArticleUnit) -> Boolean {
         return { e -> e.id == id }
     }
